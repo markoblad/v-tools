@@ -632,6 +632,264 @@ describe('VTools functions test', () => {
     expect(result.join('')).to.equal(expectation.join(''));
   });
 
+  it('should return decimalToStr', () => {
+    var result = [
+      VTools.decimalToStr(null),
+      VTools.decimalToStr('0'),
+      VTools.decimalToStr('010'),
+      VTools.decimalToStr(100),
+      VTools.decimalToStr(1e2),
+      VTools.decimalToStr(100.001),
+      VTools.decimalToStr('00100.001'),
+      VTools.decimalToStr('00100.001'),
+      VTools.decimalToStr(100.0000009),
+      VTools.decimalToStr(100.0000009),
+      VTools.decimalToStr(1.000000009e2),
+      VTools.decimalToStr('1.000000009e2'),
+      VTools.decimalToStr(10000.00009e-2),
+    ];
+    var expectation = [
+      '',
+      '0.00',
+      '10.00',
+      '100.00',
+      '100.00',
+      '100.001',
+      '100.001',
+      '100.001',
+      '100.0000009',
+      '100.0000009',
+      '100.0000009',
+      '100.0000009',
+      '100.0000009',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+
+  it('should return decimalToPercStr', () => {
+    var result = [
+      VTools.decimalToPercStr(null),
+      VTools.decimalToPercStr('0'),
+      VTools.decimalToPercStr('010'),
+      VTools.decimalToPercStr(100),
+      VTools.decimalToPercStr(1e2),
+      VTools.decimalToPercStr(100.001),
+      VTools.decimalToPercStr('00100.001'),
+      VTools.decimalToPercStr('00100.001'),
+      VTools.decimalToPercStr(100.0000009),
+      VTools.decimalToPercStr(100.0000009),
+      VTools.decimalToPercStr(1.000000009e2),
+      VTools.decimalToPercStr('1.000000009e2'),
+      VTools.decimalToPercStr(10000.00009e-2),
+    ];
+    var expectation = [
+      '0.00%',
+      '0.00%',
+      '1000.00%',
+      '10000.00%',
+      '10000.00%',
+      '10000.10%',
+      '10000.10%',
+      '10000.10%',
+      '10000.00009%',
+      '10000.00009%',
+      '10000.00009%',
+      '10000.00009%',
+      '10000.00009%',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return percToDecimal', () => {
+    var result = [
+      VTools.percToDecimal(null),
+      VTools.percToDecimal('0'),
+      VTools.percToDecimal('010'),
+      VTools.percToDecimal(100),
+      VTools.percToDecimal(1e2),
+      VTools.percToDecimal(100.001),
+      VTools.percToDecimal('00100.001'),
+      VTools.percToDecimal('00100.001'),
+      VTools.percToDecimal(100.0000009),
+      VTools.percToDecimal(100.0000009),
+      VTools.percToDecimal(1.000000009e2),
+      VTools.percToDecimal('1.000000009e2'),
+      VTools.percToDecimal(10000.00009e-2),
+    ];
+    var expectation = [
+      '0',
+      '0',
+      '0.1',
+      '1',
+      '1',
+      '1.00001',
+      '1.00001',
+      '1.00001',
+      '1.000000009',
+      '1.000000009',
+      '1.000000009',
+      '1.000000009',
+      '1.000000009',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return percentThreshold', () => {
+    var result = [
+      VTools.percentThreshold(null),
+      VTools.percentThreshold('0'),
+      VTools.percentThreshold('010'),
+      VTools.percentThreshold(100),
+      VTools.percentThreshold(1e2),
+      VTools.percentThreshold(100.001),
+      VTools.percentThreshold('00100.001'),
+      VTools.percentThreshold('00100.001'),
+      VTools.percentThreshold(100.0000009),
+      VTools.percentThreshold(100.0000009),
+      VTools.percentThreshold(1.000000009e2),
+      VTools.percentThreshold('1.000000009e2'),
+      VTools.percentThreshold(10000.00009e-2),
+      VTools.percentThreshold(66.6666666666),
+      VTools.percentThreshold(66.66),
+      VTools.percentThreshold(33.33),
+      VTools.percentThreshold(50),
+    ];
+    var expectation = [
+      '',
+      'at least 0%',
+      'at least 010%', // check
+      'at least 100%',
+      'at least 100%',
+      'at least 100.001%',
+      'at least 00100.001%', // check
+      'at least 00100.001%', // check
+      'at least 100.0000009%',
+      'at least 100.0000009%',
+      'at least 100.0000009%',
+      'at least 1.000000009e2%', // check
+      'at least 100.0000009%',
+      'at least two-thirds',
+      'at least two-thirds',
+      'at least one-third',
+      'a majority',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return numberWithCommas', () => {
+    var result = [
+      // VTools.numberWithCommas(null),
+      VTools.numberWithCommas('0'),
+      VTools.numberWithCommas('010'),
+      VTools.numberWithCommas(100),
+      VTools.numberWithCommas(1e2),
+      VTools.numberWithCommas(100.001),
+      VTools.numberWithCommas('1100100.001'),
+      VTools.numberWithCommas('00100.001'),
+      VTools.numberWithCommas(100.0000009),
+      VTools.numberWithCommas(100.0000009),
+      VTools.numberWithCommas(1.000000009e2),
+      VTools.numberWithCommas('1.000000009e2'),
+      VTools.numberWithCommas(10000.00009e-2),
+    ];
+    var expectation = [
+      // '',
+      '0',
+      '010', // check
+      '100',
+      '100',
+      '100.001',
+      '1,100,100.001',
+      '00,100.001', // check
+      '100.0,000,009', // check
+      '100.0,000,009', // check
+      '100.0,000,009', // check
+      '1.000,000,009e2', // check
+      '100.0,000,009', // check
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return decimalToPercentage', () => {
+    var result = [
+      VTools.decimalToPercentage(null),
+      VTools.decimalToPercentage('0'),
+      VTools.decimalToPercentage('010'),
+      VTools.decimalToPercentage(100),
+      VTools.decimalToPercentage(1e2, 4),
+      VTools.decimalToPercentage(100.001),
+      VTools.decimalToPercentage('00100.001'),
+      VTools.decimalToPercentage('00100.001', 2),
+      VTools.decimalToPercentage(100.0000009, 5),
+      VTools.decimalToPercentage(100.0000009),
+      VTools.decimalToPercentage(1.000000009e2),
+      VTools.decimalToPercentage('1.000000009e2', 5),
+      VTools.decimalToPercentage(10000.00009e-2),
+    ];
+    var expectation = [
+      '0.00',
+      '0.00',
+      '1000.00',
+      '10000.00',
+      '10000.0000',
+      '10000.10',
+      '10000.10',
+      '10000.10',
+      '10000.00009',
+      '10000.00',
+      '10000.00',
+      '10000.00009',
+      '10000.00',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return roundToDecimal', () => {
+    var result = [
+      VTools.roundToDecimal(null),
+      VTools.roundToDecimal('0'),
+      VTools.roundToDecimal('010'),
+      VTools.roundToDecimal(100),
+      VTools.roundToDecimal(1e2, 2),
+      VTools.roundToDecimal(100.001),
+      VTools.roundToDecimal('00100.001'),
+      VTools.roundToDecimal('00100.001', 3),
+      VTools.roundToDecimal(100.0000009, 7),
+      VTools.roundToDecimal(100.0000009, 6),
+      VTools.roundToDecimal(1.000000009e2),
+      VTools.roundToDecimal('1.000000009e2', 7),
+      VTools.roundToDecimal(10000.00009e-2),
+    ];
+    var expectation = [
+      'NaN',
+      '0', // check
+      '10', // check
+      '100', // check
+      '100', // check
+      '100', // check
+      '100', // check
+      '100.001',
+      '100.0000009',
+      '100.000001',
+      '100', // check
+      '100.0000009',
+      '100', // check
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return numberToWords for number', () => {
+    // tested in v-number-to-words
+    var result = VTools.numberToWords(2);
+    expect(result).to.equal('two');
+  });
+  it('for enumDate should get unix UTC timestamp given a unix UTC timestamp', () => {
+    var result = VTools.enumDate(1439344269);
+    expect(result).to.equal(1439344269);
+  });
+  it('for enumDate should get unix UTC timestamp given a date', () => {
+    var result = VTools.enumDate('August 11, 2015');
+    // 1439265600000
+    expect(result).to.equal(1439251200000);
+  });
+  it('for enumDate should get unix UTC timestamp given a date', () => {
+    var result = VTools.enumDate('August 11, 2015 21:51:09');
+    expect(result).to.equal(1439329869000);
+  });
 
   it('should return toRomanette for number', () => {
     var result = VTools.toRomanette(2);
