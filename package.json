@@ -1,0 +1,47 @@
+{
+  "name": "v-tools",
+  "version": "0.0.1",
+  "description": "collection of formatting tools for human documents",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "mocha --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markoblad/v-tools.git"
+  },
+  "keywords": [
+    "format",
+    "formatting",
+    "documents",
+    "v-tools",
+    "valcu"
+  ],
+  "author": "Mark Oblad <moblad@valcu.co> (https://twitter.com/markoblad)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/markoblad/v-tools/issues"
+  },
+  "homepage": "https://github.com/markoblad/v-tools#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^4.1.0",
+    "typescript": "^2.6.2"
+  },
+  "dependencies": {
+    "@types/accounting": "^0.4.1",
+    "@types/lodash": "^4.14.91",
+    "@types/mathjs": "0.0.36",
+    "@types/moment": "^2.13.0",
+    "@types/pluralize": "0.0.28",
+    "@types/underscore.string": "0.0.32",
+    "accounting": "^0.4.1",
+    "lodash": "^4.17.4",
+    "mathjs": "^3.18.1",
+    "moment": "^2.20.1",
+    "pluralize": "^7.0.0",
+    "underscore.string": "^3.3.4",
+    "v-number-to-words": "^1.0.6"
+  }
+}
