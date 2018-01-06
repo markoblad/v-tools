@@ -177,6 +177,10 @@ export class VTools {
     return (typeof(value) === 'string');
   }
 
+  public static isNumeric(value?: any): boolean {
+    return !VTools.isObject(value) && !VTools.isArray(value) && !isNaN(parseFloat(value)) && isFinite(value);
+  }
+
   public static isTrue(value?: any): boolean {
     if (value === undefined || value === null) {
       return false;
@@ -201,6 +205,42 @@ export class VTools {
     for (let i = 0, l = value.length; i < l; i += size) {
       callback(value.slice(i, i + size));
     }
+  }
+
+  public static arraySum(value?: any): number {
+    if (value && VTools.isArray(value)) {
+      return _.reduce(value, function(memo: number, num: any) {
+        let numType = typeof num;
+        return ((num && (numType === 'string' || numType === 'number') &&  (isFinite(num) || num === Infinity)) ? memo + parseFloat(num) : memo);
+      }, 0);
+    } else { return 0; }
+  }
+
+  public static arrayItemCounts(array: any): any {
+    return _.reduce(array || [], function(memo: any, e: any){
+      memo[e] = memo[e] || 0; memo[e] += 1; return memo;
+    }, {});
+  }
+
+  public static hasRangeOverlap(
+    range1: [number, number],
+    range2: [number, number],
+    options: {strict?: boolean, sort?: boolean} = {}
+  ): boolean {
+    if (VTools.isTrue(options['sort'])) {
+      range1 = range1.sort();
+      range2 = range2.sort();
+    }
+    return range1 && range2 && range1.length === 2 && range2.length === 2 &&
+    (VTools.isTrue(options['strict']) ?
+      ( 
+        (range1[0] !== range1[1]) && (
+          ((range1[0] < range2[1]) && (range1[1] > range2[0])) ||
+          ((range2[0] < range1[1]) && (range2[1] > range1[0]))
+        )
+      ) :
+      ((range1[0] <= range2[1]) && (range2[0] <= range1[1]))
+    );
   }
 
   public static makeString(value?: any): string {
@@ -287,7 +327,10 @@ export class VTools {
     if (VTools.roundToDecimal(parseFloat(number), 0) === parseFloat(number)) {
       return accounting.formatNumber(<any>number);
     } else {
-      return VTools.decimalToStr(parseFloat(number));
+      let decimalStr = VTools.decimalToStr(parseFloat(number));
+      if (!decimalStr) return decimalStr;
+      let pieces = decimalStr.split('.');
+      return accounting.formatNumber(<any>(pieces[0] || '0')) + '.' + (pieces[1] || '00');
     }
   }
 
@@ -421,8 +464,10 @@ export class VTools {
     if (value && value.toString().length > 0) {
       if (typeof value === 'number') {
         return moment.unix(value).format('LL');
-      } else if (value.toString().match(/\d{8}/)) {
+      } else if (value.toString().trim().match(/^\d{8}$/)) {
         return moment(value, 'YYYYMMDD').format('LL');
+      } else if (value.toString().trim().match(/^\d{4}-\d{2}\d{2}$/)) {
+        return moment(value, 'YYYY-MM-DD').format('LL');
       } else {
         return moment(value).format('LL');
       }
@@ -492,7 +537,7 @@ export class VTools {
   public static join_array2d(array2d: any[]) {
     if (array2d && VTools.isArray(array2d)) {
       return VTools.smart_array2d_values(array2d)
-      .map((innerArray) => {
+      .map((innerArray: any) => {
         return VTools.isArray(innerArray) ?
         innerArray.join(' - ') :
         innerArray.toString();
@@ -500,82 +545,66 @@ export class VTools {
     }
   }
 
-  public static join_array_of_hashes_values(arrayOfHashes: any[]) {
+  // confusing: doesn't return keys
+  public static join_array_of_hashes_values(arrayOfHashes: any[]): string | any {
     if (arrayOfHashes && VTools.isArray(arrayOfHashes)) {
       return VTools.smart_array_of_hash_values(arrayOfHashes)
-      .map((hash) => {
-        VTools.isObject(hash) ?
-        (_.map(hash, (v, k) => { return VTools.smart_format_value(v); }).join(', ')) :
-        VTools.smart_format_value(hash);
+      .map((hash: any) => {
+        return (VTools.isObject(hash) ?
+        (_.map(hash, (v, k) => { return VTools.smartFormatValue(v); }).join(', ')) :
+        VTools.smartFormatValue(hash));
       }).join('; ');
     }
   }
 
-  public static smart_array2d_values(array2d: any[]) {
-    let updatedArray: any[] = [];
-    if (array2d && VTools.isArray(array2d)) {
-      array2d.forEach((array) => {
-        updatedArray.push(VTools.smart_array_values(array));
-      });
-    }
-    return updatedArray;
+  // confusing naming: returns an array
+  public static hash_to_lines(hash: any): any[] {
+    return _.map(VTools.smart_hash_values(hash), (v, k) => {
+      return k.toString() + ': ' + v.toString();
+    });
   }
 
-  public static smart_array_values(array: any[]) {
-    let updatedArray: any[] = [];
-    if (array && VTools.isArray(array)) {
-      array.forEach((v) => {
-        updatedArray.push(VTools.smart_format_value(v));
-      });
-    }
-    return updatedArray;
-  }
-
-  public static smart_hash_values(hash: any) {
-    let updatedHash = _.defaults({}, hash);
-    if (hash && VTools.isObject(hash)) {
-      _.each(hash, (v, k) => {
-        updatedHash[k] = VTools.smart_format_value(v);
-      });
-    }
-    return updatedHash;
-  }
-
-  public static hash_to_lines(hash: any) {
-    return VTools.smart_hash_values(hash)
-    .map((v: any, k: any) => { return k.toString() + ': ' + v.toString(); });
-  }
-
-  public static hashes_to_lines(hashes: any[]) {
+  // confusing naming: returns a string
+  public static hashes_to_lines(hashes: any[]): string | any {
     if (!VTools.isArray(hashes)) { return hashes; }
     return hashes.map((hash) => {
-      return _.map(VTools.smart_hash_values(hash), (v, k) => {
-        return k.toString() + ': ' + v.toString();
-      });
+      return VTools.hash_to_lines(hash);
     }).join('; ');
   }
 
-  public static smart_array_of_hash_values(arrayOfHashes: any[]) {
-    let updatedArray: any[] = [];
-    if (arrayOfHashes && VTools.isArray(arrayOfHashes)) {
-      arrayOfHashes.forEach((hash) => {
-        updatedArray.push(VTools.smart_hash_values(hash));
+  public static smartRecursiveFormat(obj: any) {
+    let updatedObj: any;
+    if (obj && VTools.isObject(obj)) {
+      updatedObj = _.defaults({}, obj);
+      _.each(obj, (v, k) => {
+        updatedObj[k] = VTools.smartRecursiveFormat(v);
       });
+    } else if (obj && VTools.isArray(obj)) {
+      updatedObj = [];
+      obj.forEach((v: any) => {
+        updatedObj.push(VTools.smartRecursiveFormat(v));
+      });
+    } else {
+      updatedObj = VTools.smartFormatValue(obj);
     }
-    return updatedArray;
+    return updatedObj;
   }
+  public static smart_array_values = VTools.smartRecursiveFormat;
+  public static smart_hash_values = VTools.smartRecursiveFormat;
+  public static smart_array2d_values = VTools.smartRecursiveFormat;
+  public static smart_array_of_hash_values = VTools.smartRecursiveFormat;
 
-  public static smart_format_value(v: any): string {
+  public static smartFormatValue(v: any): string {
     let formattedV = v;
     if (VTools.isDate(v) || moment.isMoment(v) ||
     (typeof v === 'string' && (/^\d\d\d\d\-\d\d\-\d\d$/).test(v))) {
       formattedV = VTools.formatDate(v);
     } else if (typeof v === 'number') {
       formattedV = VTools.variableInteger(v);
-      // formattedV = decimal_to_str(v)
     }
     return formattedV;
   }
+  public static smart_format_value = VTools.smartFormatValue;
 
   public static valueOrHolder(value?: any) {
     if (s.isBlank(value) || value.toString().replace(/\s/ig, '').length === 0) {
@@ -585,13 +614,6 @@ export class VTools {
     }
   }
 
-  public static arraySum(value?: any): number {
-    if (value && VTools.isArray(value)) {
-      return _.reduce(value, function(memo: number, num: any) {
-        return ((num && (isFinite(num) || num === Infinity)) ? memo + parseFloat(num) : memo);
-      }, 0);
-    } else { return 0; }
-  }
   public static arrayToHumanList(value?: any, options?: any): string {
     options = options || {};
     if (!VTools.isArray(value)) { return value; };
@@ -599,10 +621,10 @@ export class VTools {
       {
         separator: ',',
         junctive: 'and',
-        serial: false,
+        serial: null,
       }
     );
-    let multipleJunctive = (options['serial'] || options['separator'] === ';') ?
+    let multipleJunctive = (options['serial'] || (options['separator'] === ';') && !VTools.isFalse(options['serial'])) ?
       (options['separator'] + ' ') : ' ';
     let length = value.length;
     let str = '';
@@ -623,25 +645,6 @@ export class VTools {
     return str;
   }
 
-  public static arrayItemCounts(array: any): any {
-    return _.reduce(array || [], function(memo: any, e: any){
-      memo[e] = memo[e] || 0; memo[e] += 1; return memo;
-    }, {});
-  }
-
-  public static isNumeric(value?: any): boolean {
-    return !isNaN(parseFloat(value)) && isFinite(value);
-  }
-
-  public static hasRangeOverlap(
-    range1: [number, number],
-    range2: [number, number],
-    options?: {}
-  ): boolean {
-    return range1 && range2 && range1.length === 2 && range2.length === 2 &&
-    (range1[0] <= range2[1]) && (range2[0] <= range1[1]);
-  }
-
   public static jsFormat(val: any, fns?: any): any {
     if (VTools.isBlank(fns)) { return VTools.coerceToString(val); }
     fns = [].concat(fns || []);
@@ -652,7 +655,7 @@ export class VTools {
     return VTools.coerceToString(val);
   }
 
-  public static jsFormatVField(val: string | number, vFieldHelp?: any, formatterKeys?: any[]) {
+  public static jsFormatVField(val: any, vFieldHelp?: any, formatterKeys?: any[]) {
     if (!vFieldHelp || VTools.isBlank(formatterKeys)) { return val; }
     let fns: any = [];
     (formatterKeys || []).forEach((formatterKey) => {

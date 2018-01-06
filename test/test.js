@@ -53,7 +53,6 @@ describe('VTools functions test', () => {
     expect(result).to.equal('year');
   });
 
-
   it('should return isBlank for various', () => {
     var result = [
       VTools.isBlank(null),
@@ -213,6 +212,40 @@ describe('VTools functions test', () => {
     expect(result.join('')).to.equal(expectation.join(''));
   });
 
+  it('should return isNumeric for various', () => {
+    var result = [
+      VTools.isNumeric(null),
+      VTools.isNumeric(),
+      VTools.isNumeric(undefined),
+      VTools.isNumeric(0),
+      VTools.isNumeric('0'),
+      VTools.isNumeric({}),
+      VTools.isNumeric({0:null}),
+      VTools.isNumeric([]),
+      VTools.isNumeric([0]),
+      VTools.isNumeric(true),
+      VTools.isNumeric(false),
+      VTools.isNumeric(NaN),
+      VTools.isNumeric(Infinity),
+    ];
+    var expectation = [
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+
   it('should return isTrue for various', () => {
     var result = [
       VTools.isTrue(null),
@@ -358,6 +391,59 @@ describe('VTools functions test', () => {
     });
     var expectation = [1, 2, 3, 4, 5, 6];
     expect(result).to.equal(expectation.join(''));
+  });
+
+  it('should return arraySum for various', () => {
+    var result = [
+      VTools.arraySum([null, undefined, 0, '0', 1, '1', {}, {0:null}, [], [1], true, false, '3.0001%', '$1', 0.1, '0.01']),
+      VTools.arraySum([null, undefined, 0, '0', 1, '1', {}, {0:null}, [], [1], true, false, NaN, '$1', 0.1, '0.01']),
+      VTools.arraySum([null, undefined, 0, '0', 1, '1', {}, {0:null}, [], [1], true, false, NaN, Infinity, 0.1, '0.1']),
+    ];
+    var expectation = [
+      2.11,
+      2.11,
+      Infinity,
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+
+  it('should return arrayItemCounts', () => {
+    var result = VTools.arrayItemCounts([0, 1, 0, '0', null, null, 'null', '1', 2.1, 2.10, 'v', 'va', 'v', 3]);
+    expect(VTools.hashes_to_lines([result])).to.equal(VTools.hashes_to_lines([{'0': 3, '1': 2, null: 3, '2.1': 2, 'v': 2, 'va': 1, 3: 1}]));
+  });
+
+  it('should return hasRangeOverlap for various', () => {
+    var result = [
+      VTools.hasRangeOverlap([0, 1], [1, 2]),
+      VTools.hasRangeOverlap([0, 1], [1, 2], {strict: true}),
+      VTools.hasRangeOverlap([0, 1.1], [1, 2], {strict: true}),
+      VTools.hasRangeOverlap([1, 2], [0, 1.1], {strict: true}),
+      VTools.hasRangeOverlap([1, 2], [1.1, 0], {strict: true}),
+      VTools.hasRangeOverlap([1, 2], [1.1, 0], {strict: true, sort: true}),
+      VTools.hasRangeOverlap([-1, 2], [1, 2]),
+      VTools.hasRangeOverlap([0, 1.1], [1, 2]),
+      VTools.hasRangeOverlap([1, 2], [0, 1.1]),
+      VTools.hasRangeOverlap([2, 1], [0, 1.1]),
+      VTools.hasRangeOverlap([2, 1], [0, 1.1], {sort: true}),
+      VTools.hasRangeOverlap([2], [0, 1.1]),
+      VTools.hasRangeOverlap([2, 2, 2], [0, 1.1]),
+    ];
+    var expectation = [
+      true,
+      false,
+      true,
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      true,
+      false,
+      false,
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
   });
 
   it('should return makeString for various', () => {
@@ -890,9 +976,396 @@ describe('VTools functions test', () => {
     var result = VTools.enumDate('August 11, 2015 21:51:09');
     expect(result).to.equal(1439329869000);
   });
+  it('should return coerceToDate', () => {
+    var now = Date.now();
+    var date = new Date();
+    var result = [
+      VTools.coerceToDate(null),
+      VTools.coerceToDate('0'),
+      VTools.coerceToDate('010'),
+      VTools.coerceToDate(100),
+      VTools.coerceToDate(1e2),
+      VTools.coerceToDate('00100.001', 3),
+      VTools.coerceToDate(1439344269),
+      VTools.coerceToDate('August 11, 2015'),
+      VTools.coerceToDate(1439251200000),
+      VTools.coerceToDate('August 11, 2015 21:51:09'),
+      VTools.coerceToDate(1439329869000),
+      VTools.coerceToDate('Tue Aug 11 2015 21:51:09 GMT+0000'),
+      VTools.coerceToDate('August 11, 2015 21:51:09 UTC'),
+      new Date(VTools.coerceToDate(now)).toString(),
+      new Date(VTools.coerceToDate(date)).toString(),
+    ];
+    var expectation = [
+      'Thu Jan 01 1970 00:00:00 GMT+0000',
+      'Sat Jan 01 2000 00:00:00 GMT+0000',
+      'Mon Oct 01 2001 00:00:00 GMT+0000', // check
+      'Thu Jan 01 1970 00:00:00 GMT+0000',
+      'Thu Jan 01 1970 00:00:00 GMT+0000',
+      'Fri Jan 01 0100 00:00:00 GMT+0000', // check
+      'Sat Jan 17 1970 15:49:04 GMT+0000', // check
 
+      'Tue Aug 11 2015 00:00:00 GMT+0000',
+      'Tue Aug 11 2015 00:00:00 GMT+0000',
+      'Tue Aug 11 2015 21:51:09 GMT+0000',
+      'Tue Aug 11 2015 21:51:09 GMT+0000',
+      'Tue Aug 11 2015 21:51:09 GMT+0000',
+      'Tue Aug 11 2015 21:51:09 GMT+0000',
+      new Date(now).toString(),
+      date.toString(),
+      
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return formatDate', () => {
+    var now = Date.now();
+    var date = new Date();
+    var result = [
+      VTools.formatDate(null),
+      VTools.formatDate('0'),
+      VTools.formatDate('010'),
+      VTools.formatDate(100),
+      VTools.formatDate(1e2),
+      VTools.formatDate('00100.001', 3),
+      VTools.formatDate(1439344269),
+      VTools.formatDate('August 11, 2015'),
+      VTools.formatDate(1439251200000),
+      VTools.formatDate('August 11, 2015 21:51:09'),
+      VTools.formatDate(1439329869000),
+      VTools.formatDate('Tue Aug 11 2015 21:51:09 GMT+0000'),
+      VTools.formatDate('August 11, 2015 21:51:09 UTC'),
+      VTools.formatDate(VTools.coerceToDate(now)),
+      VTools.formatDate(date),
+    ];
+    var expectation = [
+      '',
+      'January 1, 2000',
+      'October 1, 2001',
+      'December 31, 1969',
+      'December 31, 1969',
+      'January 1, 0100',
+      'August 11, 2015',
+      'August 11, 2015',
+      'January 20, 47578',
+      'August 11, 2015',
+      'July 19, 47580',
+      'August 11, 2015',
+      'August 11, 2015',
+      VTools.coerceToDate(now).format("MMMM D, YYYY"),
+      VTools.coerceToDate(date.toString()).format("MMMM D, YYYY"),
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return formatDateSentence', () => {
+    var result = VTools.formatDateSentence('August 11, 2015');
+    expect(result).to.equal('11th day of August, 2015');
+  });
+  it('should return titleize', () => {
+    var result = [
+      VTools.titleize('oneTwo'),
+      VTools.titleize('OneTwo'),
+      VTools.titleize('One Two'),
+      VTools.titleize('one two'),
+      VTools.titleize('one Two'),
+      VTools.titleize('ONE TWO'),
+      VTools.titleize('one-two'),
+      VTools.titleize('ONE-TWO'),
+    ];
+    var expectation = [
+      'Onetwo',
+      'Onetwo',
+      'One Two',
+      'One Two',
+      'One Two',
+      'One Two',
+      'One-Two',
+      'One-Two',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return toRoman for number', () => {
+    var result = VTools.toRoman(2);
+    expect(result).to.equal('II');
+  });
+  it('should return toRoman', () => {
+    var result = [
+      VTools.toRoman(2),
+      VTools.toRoman(2018),
+    ];
+    var expectation = [
+      'II',
+      'MMXVIII',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
   it('should return toRomanette for number', () => {
     var result = VTools.toRomanette(2);
     expect(result).to.equal('ii');
   });
+  it('should return toAlpha', () => {
+    var result = [
+      VTools.toAlpha(2),
+      VTools.toAlpha(27),
+    ];
+    var expectation = [
+      'b',
+      'aa',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return toOrdinal', () => {
+    var result = [
+      VTools.toOrdinal(21),
+      VTools.toOrdinal(2),
+      VTools.toOrdinal(3),
+      VTools.toOrdinal(27),
+    ];
+    var expectation = [
+      '21st',
+      '2nd',
+      '3rd',
+      '27th',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return join_array', () => {
+    var result = [
+      VTools.join_array([1, 2]),
+      VTools.join_array(['1', '2']),
+      VTools.join_array([[1, 2], [3, 4]]),
+      VTools.join_array([[1, 2], {'3': 4}]),
+    ];
+    var expectation = [
+      '1, 2',
+      '1, 2',
+      '1,2, 3,4',
+      '1,2, [object Object]',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return join_array2d', () => {
+    var result = [
+      VTools.join_array2d([[1, 2]]),
+      VTools.join_array2d([['1', '2']]),
+      VTools.join_array2d([[1, 2], [3, 4]]),
+      VTools.join_array2d([[1, 2], {'3': 4}]),
+    ];
+    var expectation = [
+      '1 - 2',
+      '1 - 2',
+      '1 - 2; 3 - 4',
+      '1 - 2; [object Object]',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return join_array_of_hashes_values', () => {
+    var result = [
+      VTools.join_array_of_hashes_values(null),
+      VTools.join_array_of_hashes_values([[1, 2]]),
+      VTools.join_array_of_hashes_values({1: 2}),
+      VTools.join_array_of_hashes_values([['1', '2']]),
+      VTools.join_array_of_hashes_values([[1, 2], [3, 4]]),
+      VTools.join_array_of_hashes_values([[1, 2], {'3': 4}]),
+      VTools.join_array_of_hashes_values([{1: 2}, {'3': 4}]),
+    ];
+    var expectation = [
+      '',
+      '1,2',
+      undefined, // check
+      '1,2',
+      '1,2; 3,4',
+      '1,2; 4',
+      '2; 4',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return smartRecursiveFormat, smart_array_values, smart_hash_values, \
+    smart_array2d_values and smart_array_of_hash_values', () => {
+    var result1 = VTools.smartRecursiveFormat([{1: 2000, 3: {4000: [5000]}}]);
+    var result2 = VTools.smartRecursiveFormat({1: 2000, 3: {4000: [5000, {6: 7000}, {8: '2018-01-06'}]}});
+    var result3 = VTools.smart_array_values([1, 2, '2018-01-06']);
+    var result4 = VTools.smart_hash_values({8: '2018-01-06'});
+    var result5 = VTools.smart_array2d_values([[1, 2, '2018-01-06'], [3]]);
+    var result6 = VTools.smart_array_of_hash_values([{8: '2018-01-06'}]);
+    var result = [
+      result1[0][1],
+      result1[0][3][4000][0],
+      result2[1],
+      result2[3][4000][1][6],
+      result2[3][4000][2][8],
+      result3.join(', '),
+      result4[8],
+      result5.join(', '),
+      result6[0][8],
+    ];
+    var expectation = [
+      '2,000',
+      '5,000',
+      '2,000',
+      '7,000',
+      'January 6, 2018',
+      '1, 2, January 6, 2018',
+      'January 6, 2018',
+      '1,2,January 6, 2018, 3',
+      'January 6, 2018',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return smart_format_value', () => {
+    var result = [
+      VTools.smart_format_value(null),
+      VTools.smart_format_value(),
+      VTools.smart_format_value(VTools.coerceToDate('August 11, 2015 21:51:09 UTC')),
+      VTools.smart_format_value(10000),
+      VTools.smart_format_value(10000.00),
+      VTools.smart_format_value(10000.001),
+    ];
+    var expectation = [
+      '',
+      '',
+      'August 11, 2015',
+      '10,000',
+      '10,000',
+      '10,000.001',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return valueOrHolder', () => {
+    var result = [
+      VTools.valueOrHolder(null),
+      VTools.valueOrHolder(),
+      VTools.valueOrHolder('August 11, 2015 21:51:09 UTC'),
+      VTools.valueOrHolder(10000),
+      VTools.valueOrHolder(10000.00),
+      VTools.valueOrHolder(10000.001),
+    ];
+    var expectation = [
+      '_________________',
+      '_________________',
+      'August 11, 2015 21:51:09 UTC',
+      10000,
+      10000.0,
+      10000.001,
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return arrayToHumanList', () => {
+    var result = [
+      VTools.arrayToHumanList(['Mark', 'Paul', 'Stephen']), // without serial comma
+      VTools.arrayToHumanList(['Mark', 'Paul', 'Stephen'], {serial: true}), // with serial comma
+      VTools.arrayToHumanList(['Mark', 'Paul', 'Stephen'], {junctive: 'or'}), // disjunctive list without a serial comma
+      VTools.arrayToHumanList(['Mark', 'Paul', 'Stephen'], {separator: ';'}), // with a semicolon
+      VTools.arrayToHumanList(['Mark', 'Paul', 'Stephen'], {serial: false, separator: ';'}), // with a semicolon
+      VTools.arrayToHumanList(['Mark', 'Paul', 'Stephen'], {serial: true, separator: ';'}), // with a serial semicolon
+      VTools.arrayToHumanList(['Mark']), // single
+      VTools.arrayToHumanList(['Mark', 'Paul']), // double
+      VTools.arrayToHumanList(['Mark', 'Paul'], {serial: true, junctive: 'or'}), // double serial disjunctive
+      VTools.arrayToHumanList(['Mark', 'Paul'], {junctive: 'or'}), // double disjunctive
+      VTools.arrayToHumanList(['Mark', 'Paul'], {serial: false, separator: ';'}), // double disjunctive semicolon
+    ];
+    var expectation = [
+      'Mark, Paul and Stephen',
+      'Mark, Paul, and Stephen',
+      'Mark, Paul or Stephen',
+      'Mark; Paul; and Stephen',
+      'Mark; Paul and Stephen',
+      'Mark; Paul; and Stephen',
+      'Mark',
+      'Mark and Paul',
+      'Mark or Paul',
+      'Mark or Paul',
+      'Mark and Paul',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return jsFormat', () => {
+    var result = [
+      VTools.jsFormat(null),
+      VTools.jsFormat(),
+      VTools.jsFormat('August 11, 2015 21:51:09 UTC'),
+      VTools.jsFormat('August 11, 2015 21:51:09 UTC', 'formatDate'),
+      VTools.jsFormat('August 11, 2015 21:51:09 UTC', ['formatDate']),
+      VTools.jsFormat(10000),
+      VTools.jsFormat(10000.00),
+      VTools.jsFormat(10000.001),
+      VTools.jsFormat(10000.001, ['variableInteger']),
+      VTools.jsFormat(10000.001, ['variableInteger', 'variableCurrency']),
+      VTools.jsFormat(10000.001, ['variableCurrency']),
+    ];
+    var expectation = [
+      '',
+      '',
+      'August 11, 2015 21:51:09 UTC',
+      'August 11, 2015',
+      'August 11, 2015',
+      '10000',
+      '10000',
+      '10000.001',
+      '10,000.001',
+      '$10,000.00',
+      '$10,000.001',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+
+  it('should return jsFormatVField', () => {
+    var result = [
+      VTools.jsFormatVField(null),
+      VTools.jsFormatVField(),
+      VTools.jsFormatVField('August 11, 2015 21:51:09 UTC', {}, ['jsInputProcessors', 'js_formatters']),
+      VTools.jsFormatVField('August 11, 2015 21:51:09 UTC', {js_formatters: 'formatDate'}, ['jsInputProcessors', 'js_formatters']),
+      VTools.jsFormatVField('August 11, 2015 21:51:09 UTC', {jsInputProcessors: ['formatDate']}, ['jsInputProcessors', 'js_formatters']),
+      VTools.jsFormatVField(10000, null, ['jsInputProcessors', 'js_formatters']),
+      VTools.jsFormatVField(10000.00, null, ['jsInputProcessors', 'js_formatters']),
+      VTools.jsFormatVField(10000.001, null, ['jsInputProcessors', 'js_formatters']),
+      VTools.jsFormatVField(10000.001, {js_formatters: ['variableInteger']}, ['jsInputProcessors', 'js_formatters']),
+      VTools.jsFormatVField(10000.001, {js_formatters: ['variableInteger', 'variableCurrency']}, ['jsInputProcessors', 'js_formatters']),
+      VTools.jsFormatVField(10000.001, {js_formatters: ['variableCurrency']}, ['jsInputProcessors', 'js_formatters']),
+    ];
+    var expectation = [
+      '',
+      '',
+      'August 11, 2015 21:51:09 UTC',
+      'August 11, 2015',
+      'August 11, 2015',
+      '10000',
+      '10000',
+      '10000.001',
+      '10,000.001',
+      '$10,000.00',
+      '$10,000.001',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+
+  it('should return jsFormatVFields', () => {
+    var result = [
+      VTools.jsFormatVFields(null),
+      VTools.jsFormatVFields(),
+      VTools.hash_to_lines(VTools.jsFormatVFields({1: 'August 11, 2015 21:51:09 UTC'},
+        {}, ['jsInputProcessors', 'js_formatters'])),
+      VTools.hash_to_lines(VTools.jsFormatVFields({key1: new Date('August 11, 2015 21:51:09 UTC'), key2: 10000},
+        {key1: {js_formatters: ['formatDate']}, key2: {jsInputProcessors: 'variableCurrency'}}, ['jsInputProcessors', 'js_formatters'])),
+      VTools.hash_to_lines(VTools.jsInputProcess({key1: 10000.001}, {key1: {js_formatters: ['variableInteger', 'variableCurrency']}}, ['jsInputProcessors', 'js_formatters'])),
+      VTools.hash_to_lines(VTools.jsInputProcess({key1: 10000.001}, {key1: {jsInputProcessors: ['variableInteger', 'variableCurrency']}}, ['jsInputProcessors', 'js_formatters'])),
+      VTools.hash_to_lines(VTools.jsDisplay({key1: 10000.001}, {key1: {js_formatters: ['variableInteger', 'variableCurrency']}})),
+      VTools.hash_to_lines(VTools.jsDisplay({key1: 10000.001}, {key1: {jsInputProcessors: ['variableInteger', 'variableCurrency']}})),
+      VTools.hash_to_lines(VTools.jsInputDisplay({key1: 10000.001}, {key1: {js_formatters: ['variableInteger', 'variableCurrency']}})),
+      VTools.hash_to_lines(VTools.jsInputDisplay({key1: 10000.001}, {key1: {jsInputProcessors: ['variableInteger', 'variableCurrency']}})),
+    ];
+    var expectation = [
+      null,
+      undefined,
+      VTools.hash_to_lines({1: 'August 11, 2015 21:51:09 UTC'}),
+      VTools.hash_to_lines({key1: 'August 11, 2015', key2: '$10,000.00'}),
+      VTools.hash_to_lines({key1: '10,000.001'}),
+      VTools.hash_to_lines({key1: '$10,000.00'}),
+      VTools.hash_to_lines({key1: '$10,000.00'}),
+      VTools.hash_to_lines({key1: '10,000.001'}),
+      VTools.hash_to_lines({key1: '$10,000.00'}),
+      VTools.hash_to_lines({key1: '$10,000.00'}),
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+
 });
