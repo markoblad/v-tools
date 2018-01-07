@@ -420,20 +420,22 @@ class VTools {
             return date;
         }
     }
-    static formatDate(value) {
+    static formatDate(value, options = { utc: false }) {
+        let momentObj;
         if (value && value.toString().length > 0) {
             if (typeof value === 'number') {
-                return moment.unix(value).format('LL');
+                momentObj = moment.unix(value);
             }
             else if (value.toString().trim().match(/^\d{8}$/)) {
-                return moment(value, 'YYYYMMDD').format('LL');
+                momentObj = moment(value, 'YYYYMMDD');
             }
             else if (value.toString().trim().match(/^\d{4}-\d{2}\d{2}$/)) {
-                return moment(value, 'YYYY-MM-DD').format('LL');
+                momentObj = moment(value, 'YYYY-MM-DD');
             }
             else {
-                return moment(value).format('LL');
+                momentObj = moment(value);
             }
+            return options['utc'] ? momentObj.utc().format('LL') : momentObj.format('LL');
         }
         else {
             return value;

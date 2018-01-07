@@ -54,7 +54,7 @@ export declare class VTools {
     static numberToWords(value: number | string): string;
     static enumDate(obj?: any): number | null;
     static coerceToDate(date: any, options?: {}): any;
-    static formatDate(value?: any): any;
+    static formatDate(value?: any, options?: any): any;
     static formatDateSentence(date?: any, options?: {}): any;
     static titleize(value: string): string;
     static toRoman(value: number): string;
