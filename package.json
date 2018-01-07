@@ -1,8 +1,9 @@
 {
   "name": "v-tools",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "collection of formatting tools for human documents",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "mocha --reporter spec"
