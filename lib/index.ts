@@ -687,3 +687,5 @@ export class VTools {
   }
 
 }
+
+export default VTools;

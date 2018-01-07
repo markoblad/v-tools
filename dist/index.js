@@ -652,3 +652,4 @@ VTools.smart_array2d_values = VTools.smartRecursiveFormat;
 VTools.smart_array_of_hash_values = VTools.smartRecursiveFormat;
 VTools.smart_format_value = VTools.smartFormatValue;
 exports.VTools = VTools;
+exports.default = VTools;

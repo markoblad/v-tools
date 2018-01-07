@@ -82,3 +82,4 @@ export declare class VTools {
     static jsDisplay(item: {}, vFieldsHelp?: {}): any;
     static jsInputDisplay(item: {}, vFieldsHelp?: {}): any;
 }
+export default VTools;
