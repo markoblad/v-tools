@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/markoblad/v-tools.svg?branch=master)](https://travis-ci.org/markoblad/v-tools)[![Coverage Status](https://coveralls.io/repos/github/markoblad/v-tools/badge.svg?branch=master)](https://coveralls.io/github/markoblad/v-tools?branch=master)
+
 # v-tools
 A Node.js module with formatting tools for human documents
 ## Installation 
