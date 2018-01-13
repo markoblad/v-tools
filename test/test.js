@@ -1,7 +1,7 @@
 'use strict';
 var expect = require('chai').expect;
 var index = require('../dist/index.js');
-var VTools = index.VTools
+var VTools = index.VTools;
 
 describe('VTools functions test', () => {
   it('should return the ALPHABET', () => {
@@ -96,12 +96,17 @@ describe('VTools functions test', () => {
       VTools.isObject(undefined),
       VTools.isObject(0),
       VTools.isObject('0'),
+      VTools.isObject(1),
+      VTools.isObject(''),
       VTools.isObject({}),
       VTools.isObject({0:null}),
       VTools.isObject([]),
       VTools.isObject([0]),
+      VTools.isObject(['']),
       VTools.isObject(true),
       VTools.isObject(false),
+      VTools.isObject(RegExp('\\d')),
+      VTools.isObject(new RegExp('\\d')),
     ];
     var expectation = [
       false,
@@ -109,8 +114,13 @@ describe('VTools functions test', () => {
       false,
       false,
       false,
+      false,
+      false,
       true,
       true,
+      false,
+      false,
+      false,
       false,
       false,
       false,
@@ -395,16 +405,23 @@ describe('VTools functions test', () => {
 
   it('should return arraySum for various', () => {
     var result = [
+      VTools.arraySum(null),
       VTools.arraySum([null, undefined, 0, '0', 1, '1', {}, {0:null}, [], [1], true, false, '3.0001%', '$1', 0.1, '0.01']),
       VTools.arraySum([null, undefined, 0, '0', 1, '1', {}, {0:null}, [], [1], true, false, NaN, '$1', 0.1, '0.01']),
       VTools.arraySum([null, undefined, 0, '0', 1, '1', {}, {0:null}, [], [1], true, false, NaN, Infinity, 0.1, '0.1']),
     ];
     var expectation = [
+      0,
       2.11,
       2.11,
       Infinity,
     ];
     expect(result.join('')).to.equal(expectation.join(''));
+  });
+
+  it('should return arrayItemCounts for null', () => {
+    var result = VTools.arrayItemCounts(null);
+    expect(VTools.hashes_to_lines([null])).to.equal(VTools.hashes_to_lines([result]));
   });
 
   it('should return arrayItemCounts', () => {
@@ -538,20 +555,36 @@ describe('VTools functions test', () => {
   });
   it('should return pluralize', () => {
     var result = [
+      VTools.ambipluralize(null),
+      VTools.ambipluralize(''),
       VTools.ambipluralize('mark'),
       VTools.ambipluralize('country'),
       VTools.ambipluralize('share'),
+      VTools.ambipluralize('shares'),
     ];
     var expectation = [
+      null,
+      '',
       'mark(s)',
       'countr(ies)',
+      'share(s)',
       'share(s)',
     ];
     expect(result.join('')).to.equal(expectation.join(''));
   });
+
   it('should return normalizeString', () => {
-    var result = VTools.normalizeString('1m!@#$%^&*()~=+,./?><o0');
-    expect(result).to.equal('pre_1mo0');
+    var result = [
+      VTools.normalizeString(null),
+      VTools.normalizeString(''),
+      VTools.normalizeString('1m!@#$%^&*()~=+,./?><o0'),
+    ];
+    var expectation = [
+      null,
+      '',
+      'pre_1mo0',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
   });
   it('should return parseZeroPaddedInt for number', () => {
     var result = [
@@ -572,6 +605,8 @@ describe('VTools functions test', () => {
   });
   it('should return stringToDecimal', () => {
     var result = [
+      VTools.stringToDecimal(null),
+      VTools.stringToDecimal(0),
       VTools.stringToDecimal('0'),
       VTools.stringToDecimal('010'),
       VTools.stringToDecimal(100),
@@ -580,6 +615,8 @@ describe('VTools functions test', () => {
       VTools.string_to_decimal('00100.001'),
     ];
     var expectation = [
+      0.0,
+      0.0,
       0.0,
       10.0,
       100.0,
@@ -635,6 +672,7 @@ describe('VTools functions test', () => {
       VTools.variableCurrency(null),
       VTools.variableCurrency('0'),
       VTools.variableCurrency('010'),
+      VTools.variableCurrency(100.1),
       VTools.variableCurrency(100),
       VTools.variableCurrency(100.001),
       VTools.variableCurrency('00100.001'),
@@ -647,6 +685,7 @@ describe('VTools functions test', () => {
       '$0.00',
       '$0.00',
       '$10.00',
+      '$100.10',
       '$100.00',
       '$100.001',
       '$100.001',
@@ -690,6 +729,7 @@ describe('VTools functions test', () => {
       VTools.noExponentsStr('0'),
       VTools.noExponentsStr('010'),
       VTools.noExponentsStr(100),
+      VTools.noExponentsStr(-1e2),
       VTools.noExponentsStr(1e2),
       VTools.noExponentsStr(100.001),
       VTools.noExponentsStr('00100.001'),
@@ -705,6 +745,7 @@ describe('VTools functions test', () => {
       '0',
       '10',
       '100',
+      '-100',
       '100',
       '100.001',
       '100.001',
@@ -976,6 +1017,10 @@ describe('VTools functions test', () => {
     var result = VTools.enumDate('August 11, 2015 21:51:09');
     expect(result).to.equal(1439329869000);
   });
+  it('for enumDate should get NaN given a date wrapped in an array', () => {
+    var result = VTools.enumDate(['August 11, 2015 21:51:09']);
+    expect(result.toString()).to.equal(NaN.toString());
+  });
   it('should return coerceToDate', () => {
     var now = Date.now();
     var date = new Date();
@@ -995,6 +1040,7 @@ describe('VTools functions test', () => {
       VTools.coerceToDate('August 11, 2015 21:51:09 UTC'),
       new Date(VTools.coerceToDate(now)).toString(),
       new Date(VTools.coerceToDate(date)).toString(),
+      VTools.coerceToDate(['August 11, 2015 21:51:09 UTC']),
     ];
     var expectation = [
       'Thu Jan 01 1970 00:00:00 GMT+0000',
@@ -1013,7 +1059,7 @@ describe('VTools functions test', () => {
       'Tue Aug 11 2015 21:51:09 GMT+0000',
       new Date(now).toString(),
       date.toString(),
-      
+      'Thu Jan 01 1970 00:00:00 GMT+0000',
     ];
     expect(result.join('')).to.equal(expectation.join(''));
   });
@@ -1064,8 +1110,13 @@ describe('VTools functions test', () => {
     var result = VTools.formatDateSentence('August 11, 2015');
     expect(result).to.equal('11th day of August, 2015');
   });
+  it('should return formatDateSentence', () => {
+    var result = VTools.formatDateSentence(null);
+    expect(result).to.equal(null);
+  });
   it('should return titleize', () => {
     var result = [
+      VTools.titleize(null),
       VTools.titleize('oneTwo'),
       VTools.titleize('OneTwo'),
       VTools.titleize('One Two'),
@@ -1076,6 +1127,7 @@ describe('VTools functions test', () => {
       VTools.titleize('ONE-TWO'),
     ];
     var expectation = [
+      null,
       'Onetwo',
       'Onetwo',
       'One Two',
@@ -1086,6 +1138,10 @@ describe('VTools functions test', () => {
       'One-Two',
     ];
     expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return toRoman for null', () => {
+    var result = VTools.toRoman(null);
+    expect(result).to.equal('');
   });
   it('should return toRoman for number', () => {
     var result = VTools.toRoman(2);
@@ -1106,12 +1162,18 @@ describe('VTools functions test', () => {
     var result = VTools.toRomanette(2);
     expect(result).to.equal('ii');
   });
+  it('should return toRomanette for null', () => {
+    var result = VTools.toRomanette(null);
+    expect(result).to.equal('');
+  });
   it('should return toAlpha', () => {
     var result = [
+      VTools.toAlpha(0),
       VTools.toAlpha(2),
       VTools.toAlpha(27),
     ];
     var expectation = [
+      '',
       'b',
       'aa',
     ];
@@ -1134,12 +1196,14 @@ describe('VTools functions test', () => {
   });
   it('should return join_array', () => {
     var result = [
+      VTools.join_array({}),
       VTools.join_array([1, 2]),
       VTools.join_array(['1', '2']),
       VTools.join_array([[1, 2], [3, 4]]),
       VTools.join_array([[1, 2], {'3': 4}]),
     ];
     var expectation = [
+      undefined,
       '1, 2',
       '1, 2',
       '1,2, 3,4',
@@ -1149,12 +1213,14 @@ describe('VTools functions test', () => {
   });
   it('should return join_array2d', () => {
     var result = [
+      VTools.join_array2d({}),
       VTools.join_array2d([[1, 2]]),
       VTools.join_array2d([['1', '2']]),
       VTools.join_array2d([[1, 2], [3, 4]]),
       VTools.join_array2d([[1, 2], {'3': 4}]),
     ];
     var expectation = [
+      undefined,
       '1 - 2',
       '1 - 2',
       '1 - 2; 3 - 4',
@@ -1180,6 +1246,17 @@ describe('VTools functions test', () => {
       '1,2; 3,4',
       '1,2; 4',
       '2; 4',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return hashes_to_lines', () => {
+    var result = [
+      VTools.hashes_to_lines(null),
+      VTools.hashes_to_lines([{1: 2}]),
+    ];
+    var expectation = [
+      null,
+      '1: 2',
     ];
     expect(result.join('')).to.equal(expectation.join(''));
   });
@@ -1255,6 +1332,7 @@ describe('VTools functions test', () => {
   });
   it('should return arrayToHumanList', () => {
     var result = [
+      VTools.arrayToHumanList(null), // without serial comma
       VTools.arrayToHumanList(['Mark', 'Paul', 'Stephen']), // without serial comma
       VTools.arrayToHumanList(['Mark', 'Paul', 'Stephen'], {serial: true}), // with serial comma
       VTools.arrayToHumanList(['Mark', 'Paul', 'Stephen'], {junctive: 'or'}), // disjunctive list without a serial comma
@@ -1268,6 +1346,7 @@ describe('VTools functions test', () => {
       VTools.arrayToHumanList(['Mark', 'Paul'], {serial: false, separator: ';'}), // double disjunctive semicolon
     ];
     var expectation = [
+      null,
       'Mark, Paul and Stephen',
       'Mark, Paul, and Stephen',
       'Mark, Paul or Stephen',
@@ -1295,6 +1374,7 @@ describe('VTools functions test', () => {
       VTools.jsFormat(10000.001, ['variableInteger']),
       VTools.jsFormat(10000.001, ['variableInteger', 'variableCurrency']),
       VTools.jsFormat(10000.001, ['variableCurrency']),
+      VTools.jsFormat(10000.001, ['variableCurrency1']),
     ];
     var expectation = [
       '',
@@ -1308,6 +1388,7 @@ describe('VTools functions test', () => {
       '10,000.001',
       '$10,000.00',
       '$10,000.001',
+      '10000.001',
     ];
     expect(result.join('')).to.equal(expectation.join(''));
   });

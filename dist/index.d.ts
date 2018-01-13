@@ -5,9 +5,7 @@ export declare class VTools {
     static readonly ROMAN_MAP: {};
     static readonly ORDERED_ROMAN_MAP: any;
     static readonly PERIOD_FREQUENCY_LEGEND: {};
-    static readonly PERIOD_FREQUENCY_TO_PERIOD: {};
     static readonly ANNUAL_FREQUENCY_TO_LABEL: {};
-    static readonly ANNUAL_FREQUENCY_TO_TIME: {};
     static readonly PERIOD_FREQ_OPTIONS: {};
     static readonly ALL_FISCAL_PERIODS: string[];
     static readonly PERIODLY: string[];

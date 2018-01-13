@@ -68,7 +68,7 @@ export class VTools {
     };
   }
 
-  public static get PERIOD_FREQUENCY_TO_PERIOD(): {} { return {
+  // public static get PERIOD_FREQUENCY_TO_PERIOD(): {} { return {
       // '1': '1.years',
       // '2': '6.months',
       // '3': '4.months',
@@ -76,8 +76,8 @@ export class VTools {
       // '12': '1.months',
       // '26': '2.weeks',
       // '52': '1.weeks',
-    };
-  }
+  //   };
+  // }
 
   public static get ANNUAL_FREQUENCY_TO_LABEL(): {} { return {
       '1': 'Annual',
@@ -86,12 +86,12 @@ export class VTools {
     };
   }
 
-  public static get ANNUAL_FREQUENCY_TO_TIME(): {} { return {
+  // public static get ANNUAL_FREQUENCY_TO_TIME(): {} { return {
       // '1': '1.year',
       // '4': '3.months',
       // '12': '1.month',
-    };
-  }
+  //   };
+  // }
 
   public static get PERIOD_FREQ_OPTIONS(): {} { return {
       'Annual': 1,
@@ -465,10 +465,10 @@ export class VTools {
     if (value && value.toString().length > 0) {
       if (typeof value === 'number') {
         momentObj = moment.unix(value);
-      } else if (value.toString().trim().match(/^\d{8}$/)) {
-        momentObj = moment(value, 'YYYYMMDD');
       } else if (value.toString().trim().match(/^\d{4}-\d{2}\d{2}$/)) {
         momentObj = moment(value, 'YYYY-MM-DD');
+      } else if (value.toString().trim().match(/^\d{8}$/)) {
+        momentObj = moment(value, 'YYYYMMDD');
       } else {
         momentObj = moment(value);
       }
@@ -562,7 +562,7 @@ export class VTools {
   // confusing naming: returns an array
   public static hash_to_lines(hash: any): any[] {
     return _.map(VTools.smart_hash_values(hash), (v, k) => {
-      return k.toString() + ': ' + v.toString();
+      return VTools.makeString(k) + ': ' + VTools.makeString(v);
     });
   }
 
