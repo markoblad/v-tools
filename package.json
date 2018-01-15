@@ -2,10 +2,10 @@
   "name": "v-tools",
   "version": "0.0.9",
   "description": "collection of formatting tools for human documents",
-  "main": "dist/index.js",
+  "main": "dist/index.min.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && uglifyjs dist/index.js --compress --mangle  > ./dist/index.min.js",
     "test": "mocha --reporter spec",
     "cover": "istanbul cover node_modules/mocha/bin/_mocha test/*.js - - -R spec"
   },
@@ -31,7 +31,8 @@
     "coveralls": "^3.0.0",
     "istanbul": "^0.4.5",
     "mocha": "^4.1.0",
-    "typescript": "^2.6.2"
+    "typescript": "^2.6.2",
+    "uglifyjs": "^2.4.11"
   },
   "dependencies": {
     "@types/accounting": "^0.4.1",

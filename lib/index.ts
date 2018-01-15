@@ -360,7 +360,7 @@ export class VTools {
     let str = VTools.noExponentsStr(f);
     roundTo = VTools.isNumeric(roundTo) ? parseInt(roundTo.toString(), 10) : VTools.ROUND_TO_DEFAULT;
     if (str === 'NaN') return null;
-    let firstNonZeroIndex = (VTools.reverse(str).split('')).findIndex( (element): boolean => {
+    let firstNonZeroIndex = (VTools.reverse(str).split('')).findIndex( (element: string): boolean => {
       return (parseInt(element, 10) !== 0 || element === '.');
     });
     if (firstNonZeroIndex === -1) return '0.00';
