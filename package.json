@@ -1,6 +1,6 @@
 {
   "name": "v-tools",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "collection of formatting tools for human documents",
   "main": "dist/index.min.js",
   "types": "dist/index.d.ts",
