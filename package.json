@@ -47,6 +47,6 @@
     "moment": "^2.20.1",
     "pluralize": "^7.0.0",
     "underscore.string": "^3.3.4",
-    "v-number-to-words": "^1.0.7"
+    "v-number-to-words": "^1.0.9"
   }
 }
