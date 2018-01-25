@@ -54,6 +54,8 @@ export declare class VTools {
     static coerceToDate(date: any, options?: {}): any;
     static formatDate(value?: any, options?: any): any;
     static formatDateSentence(date?: any, options?: {}): any;
+    static labelize(str: any): string;
+    static hintize(str: any): string;
     static titleize(value: string): string;
     static toRoman(value: number): string;
     static toRomanette(value: number): string;

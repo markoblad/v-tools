@@ -1114,6 +1114,60 @@ describe('VTools functions test', () => {
     var result = VTools.formatDateSentence(null);
     expect(result).to.equal(null);
   });
+  it('should return labelize', () => {
+    var result = [
+      VTools.labelize(null),
+      VTools.labelize('oneTwo'),
+      VTools.labelize('OneTwo'),
+      VTools.labelize('One Two'),
+      VTools.labelize('one two'),
+      VTools.labelize('one Two'),
+      VTools.labelize('ONE TWO'),
+      VTools.labelize('one-two'),
+      VTools.labelize('ONE-TWO'),
+      VTools.labelize('ONE_TWO'),
+    ];
+    var expectation = [
+      null,
+      'One Two',
+      'One Two',
+      'One Two',
+      'One Two',
+      'One Two',
+      'One Two',
+      'One Two',
+      'One Two',
+      'One Two',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return hintize', () => {
+    var result = [
+      VTools.hintize(null),
+      VTools.hintize('oneTwo'),
+      VTools.hintize('OneTwo'),
+      VTools.hintize('One Two'),
+      VTools.hintize('one two'),
+      VTools.hintize('one Two'),
+      VTools.hintize('ONE TWO'),
+      VTools.hintize('one-two'),
+      VTools.hintize('ONE-TWO'),
+      VTools.hintize('ONE_TWO'),
+    ];
+    var expectation = [
+      null,
+      'One two',
+      'One two',
+      'One two',
+      'One two',
+      'One two',
+      'One two',
+      'One two',
+      'One two',
+      'One two',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
   it('should return titleize', () => {
     var result = [
       VTools.titleize(null),

@@ -514,6 +514,13 @@ var VTools = /** @class */ (function () {
             return date;
         }
     };
+    VTools.labelize = function (str) {
+        return s.titleize(VTools.hintize(str));
+    };
+    VTools.hintize = function (str) {
+        return s.capitalize(s.underscored((str || '').toString())
+            .split(/\_|(\W)/).join(' ').replace(/\s+/g, ' '));
+    };
     VTools.titleize = function (value) {
         if (s.isBlank(value))
             return value;

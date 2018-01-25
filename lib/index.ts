@@ -353,7 +353,6 @@ export class VTools {
     return str + z;
   }
 
-
   public static decimalToStr(number: number | string, roundTo: number = VTools.ROUND_TO_DEFAULT): string | null {
     number = VTools.makeString(number);
     let f = parseFloat(number);
@@ -484,6 +483,17 @@ export class VTools {
     try {
       return moment(date).format('Do') + ' day of ' + moment(date).format('MMMM, YYYY');
     } catch (err) { return date; }
+  }
+
+  public static labelize(str: any): string {
+    return s.titleize(VTools.hintize(str));
+  }
+
+  public static hintize(str: any): string {
+    return s.capitalize(
+      s.underscored((str || '').toString())
+      .split(/\_|(\W)/).join(' ').replace(/\s+/g, ' ')
+    );
   }
 
   public static titleize(value: string) {
