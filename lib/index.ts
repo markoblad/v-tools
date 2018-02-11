@@ -296,13 +296,11 @@ export class VTools {
     //   .replace(/[\,\$\%]*/g, '').replace(/\p{Sc}/ug, ''))
     return parseFloat((s || 0).toString().trim().replace(/[^\d\.]/g, ''));
   }
-
   public static string_to_decimal = VTools.stringToDecimal;
 
   public static stringToInteger(s: any): number {
     return parseInt(VTools.stringToDecimal(s).toString(), 10);
   }
-
   public static string_to_integer = VTools.stringToInteger;
 
   public static parseBigOrZero(value: number | string) {
@@ -539,14 +537,15 @@ export class VTools {
     return value + (ordStub[(modulus - 20) % 10] || ordStub[modulus] || ordStub[0]);
   }
 
-  public static join_array(array: any[]) {
+  public static joinArray(array: any[]) {
     if (array && VTools.isArray(array)) {
       let nonBlanks = _.filter(array, (i) => { return !s.isBlank(i); });
       return VTools.smart_array_values(nonBlanks).join(', ');
     }
   }
+  public static join_array = VTools.joinArray;
 
-  public static join_array2d(array2d: any[]) {
+  public static joinArray2d(array2d: any[]) {
     if (array2d && VTools.isArray(array2d)) {
       return VTools.smart_array2d_values(array2d)
       .map((innerArray: any) => {
@@ -556,9 +555,10 @@ export class VTools {
       }).join('; ');
     }
   }
+  public static join_array2d = VTools.joinArray2d;
 
   // confusing: doesn't return keys
-  public static join_array_of_hashes_values(arrayOfHashes: any[]): string | any {
+  public static joinArrayOfHashesValues(arrayOfHashes: any[]): string | any {
     if (arrayOfHashes && VTools.isArray(arrayOfHashes)) {
       return VTools.smart_array_of_hash_values(arrayOfHashes)
       .map((hash: any) => {
@@ -568,21 +568,24 @@ export class VTools {
       }).join('; ');
     }
   }
+  public static join_array_of_hashes_values = VTools.joinArrayOfHashesValues;
 
   // confusing naming: returns an array
-  public static hash_to_lines(hash: any): any[] {
+  public static hashToLines(hash: any): any[] {
     return _.map(VTools.smart_hash_values(hash), (v, k) => {
       return VTools.makeString(k) + ': ' + VTools.makeString(v);
     });
   }
+  public static hash_to_lines = VTools.hashToLines;
 
   // confusing naming: returns a string
-  public static hashes_to_lines(hashes: any[]): string | any {
+  public static hashesToLines(hashes: any[]): string | any {
     if (!VTools.isArray(hashes)) { return hashes; }
     return hashes.map((hash) => {
       return VTools.hash_to_lines(hash);
     }).join('; ');
   }
+  public static hashes_to_lines = VTools.hashesToLines;
 
   public static smartRecursiveFormat(obj: any) {
     let updatedObj: any;

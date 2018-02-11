@@ -563,13 +563,13 @@ var VTools = /** @class */ (function () {
         var ordStub = ['th', 'st', 'nd', 'rd'], modulus = value % 100;
         return value + (ordStub[(modulus - 20) % 10] || ordStub[modulus] || ordStub[0]);
     };
-    VTools.join_array = function (array) {
+    VTools.joinArray = function (array) {
         if (array && VTools.isArray(array)) {
             var nonBlanks = _.filter(array, function (i) { return !s.isBlank(i); });
             return VTools.smart_array_values(nonBlanks).join(', ');
         }
     };
-    VTools.join_array2d = function (array2d) {
+    VTools.joinArray2d = function (array2d) {
         if (array2d && VTools.isArray(array2d)) {
             return VTools.smart_array2d_values(array2d)
                 .map(function (innerArray) {
@@ -580,7 +580,7 @@ var VTools = /** @class */ (function () {
         }
     };
     // confusing: doesn't return keys
-    VTools.join_array_of_hashes_values = function (arrayOfHashes) {
+    VTools.joinArrayOfHashesValues = function (arrayOfHashes) {
         if (arrayOfHashes && VTools.isArray(arrayOfHashes)) {
             return VTools.smart_array_of_hash_values(arrayOfHashes)
                 .map(function (hash) {
@@ -591,13 +591,13 @@ var VTools = /** @class */ (function () {
         }
     };
     // confusing naming: returns an array
-    VTools.hash_to_lines = function (hash) {
+    VTools.hashToLines = function (hash) {
         return _.map(VTools.smart_hash_values(hash), function (v, k) {
             return VTools.makeString(k) + ': ' + VTools.makeString(v);
         });
     };
     // confusing naming: returns a string
-    VTools.hashes_to_lines = function (hashes) {
+    VTools.hashesToLines = function (hashes) {
         if (!VTools.isArray(hashes)) {
             return hashes;
         }
@@ -716,6 +716,11 @@ var VTools = /** @class */ (function () {
     };
     VTools.string_to_decimal = VTools.stringToDecimal;
     VTools.string_to_integer = VTools.stringToInteger;
+    VTools.join_array = VTools.joinArray;
+    VTools.join_array2d = VTools.joinArray2d;
+    VTools.join_array_of_hashes_values = VTools.joinArrayOfHashesValues;
+    VTools.hash_to_lines = VTools.hashToLines;
+    VTools.hashes_to_lines = VTools.hashesToLines;
     VTools.smart_array_values = VTools.smartRecursiveFormat;
     VTools.smart_hash_values = VTools.smartRecursiveFormat;
     VTools.smart_array2d_values = VTools.smartRecursiveFormat;

@@ -1248,13 +1248,14 @@ describe('VTools functions test', () => {
     ];
     expect(result.join('')).to.equal(expectation.join(''));
   });
-  it('should return join_array', () => {
+  it('should return joinArray and join_array', () => {
     var result = [
       VTools.join_array({}),
       VTools.join_array([1, 2]),
       VTools.join_array(['1', '2']),
       VTools.join_array([[1, 2], [3, 4]]),
       VTools.join_array([[1, 2], {'3': 4}]),
+      VTools.joinArray([[1, 2], {'3': 4}]),
     ];
     var expectation = [
       undefined,
@@ -1262,16 +1263,18 @@ describe('VTools functions test', () => {
       '1, 2',
       '1,2, 3,4',
       '1,2, [object Object]',
+      '1,2, [object Object]',
     ];
     expect(result.join('')).to.equal(expectation.join(''));
   });
-  it('should return join_array2d', () => {
+  it('should return joinArray2d and join_array2d', () => {
     var result = [
       VTools.join_array2d({}),
       VTools.join_array2d([[1, 2]]),
       VTools.join_array2d([['1', '2']]),
       VTools.join_array2d([[1, 2], [3, 4]]),
       VTools.join_array2d([[1, 2], {'3': 4}]),
+      VTools.joinArray2d([[1, 2], {'3': 4}]),
     ];
     var expectation = [
       undefined,
@@ -1279,10 +1282,11 @@ describe('VTools functions test', () => {
       '1 - 2',
       '1 - 2; 3 - 4',
       '1 - 2; [object Object]',
+      '1 - 2; [object Object]',
     ];
     expect(result.join('')).to.equal(expectation.join(''));
   });
-  it('should return join_array_of_hashes_values', () => {
+  it('should return joinArrayOfHashesValues and join_array_of_hashes_values', () => {
     var result = [
       VTools.join_array_of_hashes_values(null),
       VTools.join_array_of_hashes_values([[1, 2]]),
@@ -1291,6 +1295,7 @@ describe('VTools functions test', () => {
       VTools.join_array_of_hashes_values([[1, 2], [3, 4]]),
       VTools.join_array_of_hashes_values([[1, 2], {'3': 4}]),
       VTools.join_array_of_hashes_values([{1: 2}, {'3': 4}]),
+      VTools.joinArrayOfHashesValues([{1: 2}, {'3': 4}]),
     ];
     var expectation = [
       '',
@@ -1300,16 +1305,19 @@ describe('VTools functions test', () => {
       '1,2; 3,4',
       '1,2; 4',
       '2; 4',
+      '2; 4',
     ];
     expect(result.join('')).to.equal(expectation.join(''));
   });
-  it('should return hashes_to_lines', () => {
+  it('should return hashesToLines and hashes_to_lines', () => {
     var result = [
       VTools.hashes_to_lines(null),
       VTools.hashes_to_lines([{1: 2}]),
+      VTools.hashesToLines([{1: 2}]),
     ];
     var expectation = [
       null,
+      '1: 2',
       '1: 2',
     ];
     expect(result.join('')).to.equal(expectation.join(''));
