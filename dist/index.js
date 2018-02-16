@@ -247,7 +247,11 @@ var VTools = /** @class */ (function () {
         if (value && VTools.isArray(value)) {
             return _.reduce(value, function (memo, num) {
                 var numType = typeof num;
-                return ((num && (numType === 'string' || numType === 'number') && (isFinite(num) || num === Infinity)) ? memo + parseFloat(num) : memo);
+                return ((num &&
+                    (numType === 'string' || numType === 'number') &&
+                    (isFinite(num) || num === Infinity)) ?
+                    memo + parseFloat(num) :
+                    memo);
             }, 0);
         }
         else {
@@ -260,6 +264,65 @@ var VTools = /** @class */ (function () {
             memo[e] += 1;
             return memo;
         }, {});
+    };
+    VTools.arraySort = function (array) {
+        if (array === void 0) { array = []; }
+        var obj = _.map(array, function (i) { return i === 'Infinity' ? Infinity : (i === '-Infinity' ? -Infinity : i); });
+        return obj.sort(function (a, b) { return (a - b); });
+    };
+    VTools.arrayClosest = function (num, arr) {
+        if (arr === void 0) { arr = []; }
+        if (!VTools.isNumeric(num) || !VTools.isArray(arr) || arr.length === 0)
+            return null;
+        num = parseFloat(num.toString());
+        var curr = parseFloat(arr[0].toString());
+        var diff = Math.abs(num - curr);
+        arr.forEach(function (val) {
+            if (!VTools.isBlank(val)) {
+                var cleanVal = parseFloat(val.toString());
+                var newdiff = Math.abs(num - cleanVal);
+                if (VTools.isNumeric(val) && newdiff < diff) {
+                    diff = newdiff;
+                    curr = cleanVal;
+                }
+            }
+        });
+        return curr;
+    };
+    VTools.arrayClosestBelow = function (num, arr, orEqual) {
+        if (arr === void 0) { arr = []; }
+        if (!VTools.isNumeric(num) || !VTools.isArray(arr) || arr.length === 0)
+            return null;
+        num = parseFloat(num.toString());
+        var obj = _.chain(arr).uniq().compact()
+            .map(function (i) {
+            return parseFloat(i.toString());
+        }).value();
+        obj = _.reverse(VTools.arraySort(obj));
+        var closestBelow = null;
+        if (orEqual) {
+            _.find(obj, function (val) {
+                var r = VTools.isNumeric(val) && val <= num;
+                // let r = val <= num;
+                if (r)
+                    closestBelow = val;
+                return r;
+            });
+        }
+        else {
+            _.find(obj, function (val) {
+                var r = VTools.isNumeric(val) && val < num;
+                // let r = val < num;
+                if (r)
+                    closestBelow = val;
+                return r;
+            });
+        }
+        return closestBelow;
+    };
+    VTools.arrayEqualOrClosestBelow = function (num, arr) {
+        if (arr === void 0) { arr = []; }
+        return VTools.arrayClosestBelow(num, arr, true);
     };
     VTools.hasRangeOverlap = function (range1, range2, options) {
         if (options === void 0) { options = {}; }
@@ -472,6 +535,9 @@ var VTools = /** @class */ (function () {
         }
         // return Date.parse(obj)
         return parseInt(moment.utc(obj).format('x'), 10);
+    };
+    VTools.newUTCDateTimeStamp = function () {
+        return VTools.enumDate(new Date());
     };
     VTools.coerceToDate = function (date, options) {
         try {

@@ -428,7 +428,38 @@ describe('VTools functions test', () => {
     var result = VTools.arrayItemCounts([0, 1, 0, '0', null, null, 'null', '1', 2.1, 2.10, 'v', 'va', 'v', 3]);
     expect(VTools.hashes_to_lines([result])).to.equal(VTools.hashes_to_lines([{'0': 3, '1': 2, null: 3, '2.1': 2, 'v': 2, 'va': 1, 3: 1}]));
   });
-
+  it('should return arraySort', () => {
+    var result = VTools.arraySort(null);
+    expect(result.toString()).to.equal([].toString());
+    var result = VTools.arraySort([-1, 3, 2.1, -1.1, '-Infinity', null]);
+    expect(result.toString()).to.equal([-Infinity, -1.1, -1.0, null, 2.1, 3.0].toString());
+  });
+  it('should return arrayClosest', () => {
+    var result = VTools.arrayClosest(1, null);
+    expect(result).to.equal(null);
+    var result = VTools.arrayClosest(0.5, [-1, 3, 2.1, -1.1, '-Infinity', null, 1.0]);
+    expect(result).to.equal(1.0);
+  });
+  it('should return arrayClosestBelow', () => {
+    var result = VTools.arrayClosestBelow(1, null);
+    expect(result).to.equal(null);
+  });
+  it('should return arrayClosestBelow', () => {
+    var result = VTools.arrayClosestBelow(0.5, [-1, 3, 2.1, -1.1, '-Infinity', null]);
+    expect(result).to.equal(-1.0);
+  });
+  it('should return arrayEqualOrClosestBelow', () => {
+    var result = VTools.arrayEqualOrClosestBelow(1, null);
+    expect(result).to.equal(null);
+  });
+  it('should return arrayEqualOrClosestBelow', () => {
+    var result = VTools.arrayEqualOrClosestBelow(0.5, [-1, 3, 2.1, -1.1, '-Infinity', null]);
+    expect(result).to.equal(-1.0);
+  });
+  it('should return arrayEqualOrClosestBelow', () => {
+    var result = VTools.arrayEqualOrClosestBelow(0.5, [-1, 3, 2.1, -1.1, '-Infinity', null, 0.5]);
+    expect(result).to.equal(0.5);
+  });
   it('should return hasRangeOverlap for various', () => {
     var result = [
       VTools.hasRangeOverlap([0, 1], [1, 2]),
@@ -1021,6 +1052,11 @@ describe('VTools functions test', () => {
     var result = VTools.enumDate(['August 11, 2015 21:51:09']);
     expect(result.toString()).to.equal(NaN.toString());
   });
+  it('for newUTCDateTimeStamp should get unix UTC timestamp', () => {
+    var result = VTools.newUTCDateTimeStamp();
+    expect(result.toString().length).to.equal(13);
+  });
+
   it('should return coerceToDate', () => {
     var now = Date.now();
     var date = new Date();

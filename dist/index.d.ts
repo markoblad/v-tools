@@ -22,7 +22,11 @@ export declare class VTools {
     static isTrueOrFalse(value?: any): boolean;
     static eachSlice(value: any[], size: number | undefined, callback: Function): void;
     static arraySum(value?: any): number;
-    static arrayItemCounts(array: any): any;
+    static arrayItemCounts(array: any[] | null): any;
+    static arraySort(array?: any[] | null): any;
+    static arrayClosest(num: number, arr?: number[]): number | null;
+    static arrayClosestBelow(num: number, arr?: number[], orEqual?: boolean | null): number | null;
+    static arrayEqualOrClosestBelow(num: number, arr?: number[]): number | null;
     static hasRangeOverlap(range1: [number, number], range2: [number, number], options?: {
         strict?: boolean;
         sort?: boolean;
@@ -51,6 +55,7 @@ export declare class VTools {
     static roundToDecimal(value: number | string, dec?: number): number;
     static numberToWords(value: number | string): string;
     static enumDate(obj?: any): number | null;
+    static newUTCDateTimeStamp(): number;
     static coerceToDate(date: any, options?: {}): any;
     static formatDate(value?: any, options?: any): any;
     static formatDateSentence(date?: any, options?: {}): any;

@@ -211,15 +211,77 @@ export class VTools {
     if (value && VTools.isArray(value)) {
       return _.reduce(value, function(memo: number, num: any) {
         let numType = typeof num;
-        return ((num && (numType === 'string' || numType === 'number') &&  (isFinite(num) || num === Infinity)) ? memo + parseFloat(num) : memo);
+        return (
+          (
+            num &&
+            (numType === 'string' || numType === 'number') &&
+            (isFinite(num) || num === Infinity)
+          ) ?
+            memo + parseFloat(num) :
+            memo
+        );
       }, 0);
     } else { return 0; }
   }
 
-  public static arrayItemCounts(array: any): any {
+  public static arrayItemCounts(array: any[] | null): any {
     return _.reduce(array || [], function(memo: any, e: any){
       memo[e] = memo[e] || 0; memo[e] += 1; return memo;
     }, {});
+  }
+
+  public static arraySort(array: any[] | null = []): any {
+    let obj = _.map(array, (i) => { return i === 'Infinity' ? Infinity : (i === '-Infinity' ? -Infinity : i) });
+    return obj.sort((a, b) => { return (a - b); });
+  }
+
+  public static arrayClosest(num: number, arr: number[] = []): number | null {
+    if (!VTools.isNumeric(num) || !VTools.isArray(arr) || arr.length === 0) return null;
+    num = parseFloat(num.toString());
+    let curr: number = parseFloat(arr[0].toString());
+    let diff: number = Math.abs(num - curr);
+    arr.forEach((val: number | string) => {
+      if (!VTools.isBlank(val)) {
+        let cleanVal: number = parseFloat(val.toString());
+        let newdiff: number = Math.abs(num - cleanVal);
+        if (VTools.isNumeric(val) && newdiff < diff) {
+          diff = newdiff;
+          curr = cleanVal;
+        }
+      }
+    });
+    return curr;
+  }
+
+  public static arrayClosestBelow(num: number, arr: number[] = [], orEqual?: boolean | null): number | null {
+    if (!VTools.isNumeric(num) || !VTools.isArray(arr) || arr.length === 0) return null;
+    num = parseFloat(num.toString());
+    let obj = _.chain(arr).uniq().compact()
+    .map((i: number) => {
+      return parseFloat(i.toString());
+    }).value();
+    obj = _.reverse(VTools.arraySort(obj));
+    let closestBelow = null;
+    if (orEqual) {
+      _.find(obj, (val: number) => {
+        let r = VTools.isNumeric(val) && val <= num;
+        // let r = val <= num;
+        if (r) closestBelow = val;
+        return r;
+      });
+    } else {
+      _.find(obj, (val: number) => {
+        let r = VTools.isNumeric(val) && val < num;
+        // let r = val < num;
+        if (r) closestBelow = val;
+        return r;
+      });
+    }
+    return closestBelow;
+  }
+
+  public static arrayEqualOrClosestBelow(num: number, arr: number[] = []): number | null {
+    return VTools.arrayClosestBelow(num, arr, true);
   }
 
   public static hasRangeOverlap(
@@ -447,6 +509,10 @@ export class VTools {
     }
     // return Date.parse(obj)
     return parseInt(moment.utc(obj).format('x'), 10);
+  }
+
+  public static newUTCDateTimeStamp(): number {
+    return VTools.enumDate(new Date()) as number;
   }
 
   public static coerceToDate(date: any, options?: {}) {
