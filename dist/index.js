@@ -289,40 +289,62 @@ var VTools = /** @class */ (function () {
         });
         return curr;
     };
-    VTools.arrayClosestBelow = function (num, arr, orEqual) {
+    VTools.arrayClosestBelowOrAbove = function (num, arr, orEqual, orAbove) {
         if (arr === void 0) { arr = []; }
-        if (!VTools.isNumeric(num) || !VTools.isArray(arr) || arr.length === 0)
+        if (!VTools.isNumeric(num) || !VTools.isArray(arr) || arr.length === 0) {
             return null;
+        }
         num = parseFloat(num.toString());
         var obj = _.chain(arr).uniq().compact()
             .map(function (i) {
             return parseFloat(i.toString());
         }).value();
-        obj = _.reverse(VTools.arraySort(obj));
-        var closestBelow = null;
+        obj = VTools.arraySort(obj);
+        if (!orAbove) {
+            obj = _.reverse(obj);
+        }
+        var closest = null;
+        var fn;
         if (orEqual) {
-            _.find(obj, function (val) {
-                var r = VTools.isNumeric(val) && val <= num;
-                // let r = val <= num;
-                if (r)
-                    closestBelow = val;
-                return r;
-            });
+            if (orAbove) {
+                fn = function (val, num) { return val >= num; };
+            }
+            else {
+                fn = function (val, num) { return val <= num; };
+            }
         }
         else {
-            _.find(obj, function (val) {
-                var r = VTools.isNumeric(val) && val < num;
-                // let r = val < num;
-                if (r)
-                    closestBelow = val;
-                return r;
-            });
+            if (orAbove) {
+                fn = function (val, num) { return val > num; };
+            }
+            else {
+                fn = function (val, num) { return val < num; };
+            }
         }
-        return closestBelow;
+        _.find(obj, function (val) {
+            var r = VTools.isNumeric(val) && fn(val, num);
+            // let r = val <= num;
+            if (r)
+                closest = val;
+            return r;
+        });
+        return closest;
+    };
+    VTools.arrayClosestBelow = function (num, arr) {
+        if (arr === void 0) { arr = []; }
+        return VTools.arrayClosestBelowOrAbove(num, arr, false, false);
+    };
+    VTools.arrayClosestAbove = function (num, arr) {
+        if (arr === void 0) { arr = []; }
+        return VTools.arrayClosestBelowOrAbove(num, arr, false, true);
     };
     VTools.arrayEqualOrClosestBelow = function (num, arr) {
         if (arr === void 0) { arr = []; }
-        return VTools.arrayClosestBelow(num, arr, true);
+        return VTools.arrayClosestBelowOrAbove(num, arr, true, false);
+    };
+    VTools.arrayEqualOrClosestAbove = function (num, arr) {
+        if (arr === void 0) { arr = []; }
+        return VTools.arrayClosestBelowOrAbove(num, arr, true, true);
     };
     VTools.hasRangeOverlap = function (range1, range2, options) {
         if (options === void 0) { options = {}; }

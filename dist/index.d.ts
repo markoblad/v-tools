@@ -25,8 +25,11 @@ export declare class VTools {
     static arrayItemCounts(array: any[] | null): any;
     static arraySort(array?: any[] | null): any;
     static arrayClosest(num: number, arr?: number[]): number | null;
-    static arrayClosestBelow(num: number, arr?: number[], orEqual?: boolean | null): number | null;
+    static arrayClosestBelowOrAbove(num: number, arr: number[] | undefined, orEqual: boolean | null, orAbove: boolean | null): number | null;
+    static arrayClosestBelow(num: number, arr?: number[]): number | null;
+    static arrayClosestAbove(num: number, arr?: number[]): number | null;
     static arrayEqualOrClosestBelow(num: number, arr?: number[]): number | null;
+    static arrayEqualOrClosestAbove(num: number, arr?: number[]): number | null;
     static hasRangeOverlap(range1: [number, number], range2: [number, number], options?: {
         strict?: boolean;
         sort?: boolean;

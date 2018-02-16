@@ -253,35 +253,58 @@ export class VTools {
     return curr;
   }
 
-  public static arrayClosestBelow(num: number, arr: number[] = [], orEqual?: boolean | null): number | null {
-    if (!VTools.isNumeric(num) || !VTools.isArray(arr) || arr.length === 0) return null;
+  public static arrayClosestBelowOrAbove(
+    num: number,
+    arr: number[] = [],
+    orEqual: boolean | null,
+    orAbove: boolean | null
+  ): number | null {
+    if (!VTools.isNumeric(num) || !VTools.isArray(arr) || arr.length === 0) { return null; }
     num = parseFloat(num.toString());
     let obj = _.chain(arr).uniq().compact()
     .map((i: number) => {
       return parseFloat(i.toString());
     }).value();
-    obj = _.reverse(VTools.arraySort(obj));
-    let closestBelow = null;
+    obj = VTools.arraySort(obj);
+    if (!orAbove) { obj = _.reverse(obj); }
+    let closest = null;
+    let fn: Function;
     if (orEqual) {
-      _.find(obj, (val: number) => {
-        let r = VTools.isNumeric(val) && val <= num;
-        // let r = val <= num;
-        if (r) closestBelow = val;
-        return r;
-      });
+      if (orAbove) {
+        fn = function(val: number, num: number): boolean { return val >= num; }
+      } else {
+        fn = function(val: number, num: number): boolean { return val <= num; }
+      }
     } else {
-      _.find(obj, (val: number) => {
-        let r = VTools.isNumeric(val) && val < num;
-        // let r = val < num;
-        if (r) closestBelow = val;
-        return r;
-      });
+      if (orAbove) {
+        fn = function(val: number, num: number): boolean { return val > num; }
+      } else {
+        fn = function(val: number, num: number): boolean { return val < num; }
+      }
     }
-    return closestBelow;
+    _.find(obj, (val: number) => {
+      let r = VTools.isNumeric(val) && fn(val, num);
+      // let r = val <= num;
+      if (r) closest = val;
+      return r;
+    });
+    return closest;
+  }
+
+  public static arrayClosestBelow(num: number, arr: number[] = []): number | null {
+    return VTools.arrayClosestBelowOrAbove(num, arr, false, false);
+  }
+
+  public static arrayClosestAbove(num: number, arr: number[] = []): number | null {
+    return VTools.arrayClosestBelowOrAbove(num, arr, false, true);
   }
 
   public static arrayEqualOrClosestBelow(num: number, arr: number[] = []): number | null {
-    return VTools.arrayClosestBelow(num, arr, true);
+    return VTools.arrayClosestBelowOrAbove(num, arr, true, false);
+  }
+
+  public static arrayEqualOrClosestAbove(num: number, arr: number[] = []): number | null {
+    return VTools.arrayClosestBelowOrAbove(num, arr, true, true);
   }
 
   public static hasRangeOverlap(

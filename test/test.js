@@ -460,6 +460,26 @@ describe('VTools functions test', () => {
     var result = VTools.arrayEqualOrClosestBelow(0.5, [-1, 3, 2.1, -1.1, '-Infinity', null, 0.5]);
     expect(result).to.equal(0.5);
   });
+  it('should return arrayClosestAbove', () => {
+    var result = VTools.arrayClosestAbove(1, null);
+    expect(result).to.equal(null);
+  });
+  it('should return arrayClosestAbove', () => {
+    var result = VTools.arrayClosestAbove(0.5, [-1, 3, 2.1, -1.1, '-Infinity', null]);
+    expect(result).to.equal(2.1);
+  });
+  it('should return arrayEqualOrClosestAbove', () => {
+    var result = VTools.arrayEqualOrClosestAbove(1, null);
+    expect(result).to.equal(null);
+  });
+  it('should return arrayEqualOrClosestAbove', () => {
+    var result = VTools.arrayEqualOrClosestAbove(0.5, [-1, 3, 2.1, -1.1, '-Infinity', null]);
+    expect(result).to.equal(2.1);
+  });
+  it('should return arrayEqualOrClosestAbove', () => {
+    var result = VTools.arrayEqualOrClosestAbove(0.5, [-1, 3, 2.1, -1.1, '-Infinity', null, 0.5]);
+    expect(result).to.equal(0.5);
+  });
   it('should return hasRangeOverlap for various', () => {
     var result = [
       VTools.hasRangeOverlap([0, 1], [1, 2]),
