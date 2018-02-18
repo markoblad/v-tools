@@ -5,6 +5,7 @@ import * as moment from 'moment';
 import * as math from 'mathjs';
 import * as accounting from 'accounting';
 import * as vn2w from 'v-number-to-words';
+import { VUtilities } from 'v-utilities';
 
 export class VTools {
 
@@ -147,204 +148,30 @@ export class VTools {
     return _.map(VTools.PERIODS, (i) => { return pluralize(i, 1); });
   }
 
-  public static isBlank(value?: any): boolean {
-    if (value == null || value == undefined) {
-      return true;
-    } else if (typeof value === 'string' || typeof value === 'number') {
-      return s.isBlank(value.toString());
-    } else if (VTools.isArray(value)){
-      return value.length === 0;
-    } else if (VTools.isObject(value)) {
-      return Object.getOwnPropertyNames(value).length === 0;
-    } else {
-      return s.isBlank(VTools.makeString(value));
-    }
-  }
+  public static isBlank = VUtilities.isBlank;
 
-  public static isObject(obj?: any): boolean {
-    return Object.prototype.toString.call( obj ) === '[object Object]';
-  }
+  public static isObject = VUtilities.isObject;
 
-  public static isArray(obj: any): boolean {
-    return Object.prototype.toString.call(obj) === '[object Array]';
-  }
+  public static isArray = VUtilities.isArray;
 
-  public static isDate(obj: any): boolean {
-    return Object.prototype.toString.call(obj) === '[object Date]';
-  }
+  public static isDate = VUtilities.isDate;
 
-  public static isString(value?: any): boolean {
-    return (typeof(value) === 'string');
-  }
+  public static isString = VUtilities.isString;
 
-  public static isNumeric(value?: any): boolean {
-    return !VTools.isObject(value) && !VTools.isArray(value) && !isNaN(parseFloat(value)) && isFinite(value);
-  }
+  public static isNumeric = VUtilities.isNumeric;
 
-  public static isTrue(value?: any): boolean {
-    if (value === undefined || value === null) {
-      return false;
-    }
-    let arr = ['yes', 'y', 'true', 't', '1', 'on'];
-    return (_.includes(arr, value.toString().toLowerCase()));
-  }
+  public static isTrue = VUtilities.isTrue;
 
-  public static isFalse(value?: any): boolean {
-    if (value === undefined || value === null) {
-      return false;
-    }
-    let arr = ['no', 'n', 'false', 'f', '0', 'off'];
-    return (_.includes(arr, value.toString().toLowerCase()));
-  }
+  public static isFalse = VUtilities.isFalse;
 
-  public static isTrueOrFalse(value?: any): boolean {
-    return VTools.isTrue(value) || VTools.isFalse(value);
-  }
+  public static isTrueOrFalse = VUtilities.isTrueOrFalse;
 
-  public static eachSlice(value: any[], size: number = 1, callback: Function): void {
-    for (let i = 0, l = value.length; i < l; i += size) {
-      callback(value.slice(i, i + size));
-    }
-  }
+  public static coerceToString = VUtilities.coerceToString;
 
-  public static arraySum(value?: any): number {
-    if (value && VTools.isArray(value)) {
-      return _.reduce(value, function(memo: number, num: any) {
-        let numType = typeof num;
-        return (
-          (
-            num &&
-            (numType === 'string' || numType === 'number') &&
-            (isFinite(num) || num === Infinity)
-          ) ?
-            memo + parseFloat(num) :
-            memo
-        );
-      }, 0);
-    } else { return 0; }
-  }
-
-  public static arrayItemCounts(array: any[] | null): any {
-    return _.reduce(array || [], function(memo: any, e: any){
-      memo[e] = memo[e] || 0; memo[e] += 1; return memo;
-    }, {});
-  }
-
-  public static arraySort(array: any[] | null = []): any {
-    let obj = _.map(array, (i) => { return i === 'Infinity' ? Infinity : (i === '-Infinity' ? -Infinity : i) });
-    return obj.sort((a, b) => { return (a - b); });
-  }
-
-  public static arrayClosest(num: number, arr: number[] = []): number | null {
-    if (!VTools.isNumeric(num) || !VTools.isArray(arr) || arr.length === 0) return null;
-    num = parseFloat(num.toString());
-    let curr: number = parseFloat(arr[0].toString());
-    let diff: number = Math.abs(num - curr);
-    arr.forEach((val: number | string) => {
-      if (!VTools.isBlank(val)) {
-        let cleanVal: number = parseFloat(val.toString());
-        let newdiff: number = Math.abs(num - cleanVal);
-        if (VTools.isNumeric(val) && newdiff < diff) {
-          diff = newdiff;
-          curr = cleanVal;
-        }
-      }
-    });
-    return curr;
-  }
-
-  public static arrayClosestBelowOrAbove(
-    num: number,
-    arr: number[] = [],
-    orEqual: boolean | null,
-    orAbove: boolean | null
-  ): number | null {
-    if (!VTools.isNumeric(num) || !VTools.isArray(arr) || arr.length === 0) { return null; }
-    num = parseFloat(num.toString());
-    let obj = _.chain(arr).uniq().compact()
-    .map((i: number) => {
-      return parseFloat(i.toString());
-    }).value();
-    obj = VTools.arraySort(obj);
-    if (!orAbove) { obj = _.reverse(obj); }
-    let closest = null;
-    let fn: Function;
-    if (orEqual) {
-      if (orAbove) {
-        fn = function(val: number, num: number): boolean { return val >= num; }
-      } else {
-        fn = function(val: number, num: number): boolean { return val <= num; }
-      }
-    } else {
-      if (orAbove) {
-        fn = function(val: number, num: number): boolean { return val > num; }
-      } else {
-        fn = function(val: number, num: number): boolean { return val < num; }
-      }
-    }
-    _.find(obj, (val: number) => {
-      let r = VTools.isNumeric(val) && fn(val, num);
-      // let r = val <= num;
-      if (r) closest = val;
-      return r;
-    });
-    return closest;
-  }
-
-  public static arrayClosestBelow(num: number, arr: number[] = []): number | null {
-    return VTools.arrayClosestBelowOrAbove(num, arr, false, false);
-  }
-
-  public static arrayClosestAbove(num: number, arr: number[] = []): number | null {
-    return VTools.arrayClosestBelowOrAbove(num, arr, false, true);
-  }
-
-  public static arrayEqualOrClosestBelow(num: number, arr: number[] = []): number | null {
-    return VTools.arrayClosestBelowOrAbove(num, arr, true, false);
-  }
-
-  public static arrayEqualOrClosestAbove(num: number, arr: number[] = []): number | null {
-    return VTools.arrayClosestBelowOrAbove(num, arr, true, true);
-  }
-
-  public static hasRangeOverlap(
-    range1: [number, number],
-    range2: [number, number],
-    options: {strict?: boolean, sort?: boolean} = {}
-  ): boolean {
-    if (VTools.isTrue(options['sort'])) {
-      range1 = range1.sort();
-      range2 = range2.sort();
-    }
-    return range1 && range2 && range1.length === 2 && range2.length === 2 &&
-    (VTools.isTrue(options['strict']) ?
-      ( 
-        (range1[0] !== range1[1]) && (
-          ((range1[0] < range2[1]) && (range1[1] > range2[0])) ||
-          ((range2[0] < range1[1]) && (range2[1] > range1[0]))
-        )
-      ) :
-      ((range1[0] <= range2[1]) && (range2[0] <= range1[1]))
-    );
-  }
-
-  public static makeString(value?: any): string {
-    if (value == null) return '';
-    return '' + value;
-  }
-
-  public static coerceToString(value: any): string {
-    return _.some(['[object Undefined]', '[object Null]'], (t): boolean => {
-      return Object.prototype.toString.call(value) === t;
-    }) ? '' : value.toString();
-  }
+  public static reverse = VUtilities.reverse;
 
   public static pluralize(value: string): string {
     return pluralize.apply(this, arguments);
-  }
-
-  public static reverse(value: string): string {
-    return value.split('').reverse().join('');
   }
 
   public static ambipluralize(value: string): any {
@@ -388,12 +215,8 @@ export class VTools {
   }
   public static string_to_integer = VTools.stringToInteger;
 
-  public static parseBigOrZero(value: number | string) {
-    return math.bignumber(VTools.isNumeric(value) ? value : 0.0);
-  }
-
   public static variableCurrency(number: number | string, currency?: string): string | null {
-    number = VTools.makeString(number);
+    number = VUtilities.makeString(number);
     if (VTools.roundToDecimal(parseFloat(number), 2) === parseFloat(number)) {
       return accounting.formatMoney(number, currency);
     } else {
@@ -405,7 +228,7 @@ export class VTools {
   }
 
   public static variableInteger(number: number | string): string | null {
-    number = VTools.makeString(number);
+    number = VUtilities.makeString(number);
     if (!VTools.isNumeric(number)) return number;
     if (VTools.roundToDecimal(parseFloat(number), 0) === parseFloat(number)) {
       return accounting.formatNumber(<any>number);
@@ -418,7 +241,7 @@ export class VTools {
   }
 
   public static noExponentsStr(number: number | string): string {
-    number = VTools.makeString(number);
+    number = VUtilities.makeString(number);
     let f = parseFloat(number);
     let data = String(f).split(/[eE]/);
     if (data.length === 1) { return data[0]; }
@@ -437,7 +260,7 @@ export class VTools {
   }
 
   public static decimalToStr(number: number | string, roundTo: number = VTools.ROUND_TO_DEFAULT): string | null {
-    number = VTools.makeString(number);
+    number = VUtilities.makeString(number);
     let f = parseFloat(number);
     let str = VTools.noExponentsStr(f);
     roundTo = VTools.isNumeric(roundTo) ? parseInt(roundTo.toString(), 10) : VTools.ROUND_TO_DEFAULT;
@@ -457,21 +280,21 @@ export class VTools {
 
   public static decimalToPercStr(number: number | string) {
     return (VTools.decimalToStr(parseFloat(
-      math.multiply(VTools.parseBigOrZero(number),
+      math.multiply(VUtilities.parseBigOrZero(number),
       math.bignumber(100.0)
     ).toString())) || '0.0') + '%';
   }
 
   public static percToDecimal(number: number | string) {
     return parseFloat(math.divide(
-      VTools.parseBigOrZero(number),
+      VUtilities.parseBigOrZero(number),
       math.bignumber(100.0)).toString()
     );
   }
 
   public static percentThreshold(number: number | string, verbose?: boolean) {
     if (!VTools.isNumeric(number)) return number;
-    number = VTools.makeString(number);
+    number = VUtilities.makeString(number);
     let result;
     if (parseFloat(number) === 50) { result = 'a majority';
     } else if (VTools.roundToDecimal(parseFloat(number), 2) ===  66.66 ||
@@ -489,13 +312,13 @@ export class VTools {
   }
 
   public static decimalToPercentage(number: number | string, dec: number = 2): string {
-    return ((parseFloat(VTools.makeString(number)) || 0.0) * 100).toFixed(dec);
+    return ((parseFloat(VUtilities.makeString(number)) || 0.0) * 100).toFixed(dec);
   }
 
   public static roundToDecimal(value: number | string, dec: number = 2): number {
-    dec = VTools.isNumeric(dec) ? parseInt(VTools.makeString(dec), 10) : 2;
+    dec = VTools.isNumeric(dec) ? parseInt(VUtilities.makeString(dec), 10) : 2;
     if (VTools.isNumeric(value)) {
-      let bigValue = VTools.parseBigOrZero(value);
+      let bigValue = VUtilities.parseBigOrZero(value);
       let num: any = math.divide(
       //   math.round(math.multiply(bigValue, math.bignumber(math.pow(10, dec)))),
         math.round(math.multiply(bigValue, math.pow(10, dec))),
@@ -506,7 +329,7 @@ export class VTools {
       num = parseFloat(num.toString());
       return num;
     } else {
-      return parseFloat(VTools.makeString(value));
+      return parseFloat(VUtilities.makeString(value));
     }
   }
 
@@ -514,33 +337,9 @@ export class VTools {
     return vn2w.numberToWords(value);
   }
 
-  public static enumDate(obj?: any) {
-    if (s.isBlank(obj)) return null;
-    if (typeof(obj) === 'number') {
-      // let exp = ParseInt(obj.toExponential().split(/e[\+\-]/)[1], 10);
-      // if (exp < 12) {
-
-      // } else {
-        return obj;
-      // }
-    }
-    if (typeof(obj) === 'string' || typeof(obj) === 'object') {
-      // let dateObj = Date.parse(obj);
-      // let offset = new Date().getTimezoneOffset()*60000;
-      // return new Date(dateObj).getTime() + offset
-      return parseInt(moment.utc(obj).format('x'), 10);
-    }
-    // return Date.parse(obj)
-    return parseInt(moment.utc(obj).format('x'), 10);
-  }
-
-  public static newUTCDateTimeStamp(): number {
-    return VTools.enumDate(new Date()) as number;
-  }
-
   public static coerceToDate(date: any, options?: {}) {
     try {
-      return moment.utc(VTools.enumDate(date) || 0);
+      return moment.utc(VUtilities.enumDate(date) || 0);
     } catch (err) {
       return date;
     }
@@ -608,7 +407,7 @@ export class VTools {
     return VTools.toRoman(value).toLowerCase();
   }
   public static toAlpha(value: number | string, result?: string) {
-    value = parseInt(VTools.makeString(value) || '0', 10);
+    value = parseInt(VUtilities.makeString(value) || '0', 10);
     result = result || '';
     let divisor = 26;
     while (value > 0) {
@@ -662,7 +461,7 @@ export class VTools {
   // confusing naming: returns an array
   public static hashToLines(hash: any): any[] {
     return _.map(VTools.smart_hash_values(hash), (v, k) => {
-      return VTools.makeString(k) + ': ' + VTools.makeString(v);
+      return VUtilities.makeString(k) + ': ' + VUtilities.makeString(v);
     });
   }
   public static hash_to_lines = VTools.hashToLines;

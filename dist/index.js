@@ -7,6 +7,7 @@ var moment = require("moment");
 var math = require("mathjs");
 var accounting = require("accounting");
 var vn2w = require("v-number-to-words");
+var v_utilities_1 = require("v-utilities");
 var VTools = /** @class */ (function () {
     function VTools() {
     }
@@ -188,191 +189,8 @@ var VTools = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    VTools.isBlank = function (value) {
-        if (value == null || value == undefined) {
-            return true;
-        }
-        else if (typeof value === 'string' || typeof value === 'number') {
-            return s.isBlank(value.toString());
-        }
-        else if (VTools.isArray(value)) {
-            return value.length === 0;
-        }
-        else if (VTools.isObject(value)) {
-            return Object.getOwnPropertyNames(value).length === 0;
-        }
-        else {
-            return s.isBlank(VTools.makeString(value));
-        }
-    };
-    VTools.isObject = function (obj) {
-        return Object.prototype.toString.call(obj) === '[object Object]';
-    };
-    VTools.isArray = function (obj) {
-        return Object.prototype.toString.call(obj) === '[object Array]';
-    };
-    VTools.isDate = function (obj) {
-        return Object.prototype.toString.call(obj) === '[object Date]';
-    };
-    VTools.isString = function (value) {
-        return (typeof (value) === 'string');
-    };
-    VTools.isNumeric = function (value) {
-        return !VTools.isObject(value) && !VTools.isArray(value) && !isNaN(parseFloat(value)) && isFinite(value);
-    };
-    VTools.isTrue = function (value) {
-        if (value === undefined || value === null) {
-            return false;
-        }
-        var arr = ['yes', 'y', 'true', 't', '1', 'on'];
-        return (_.includes(arr, value.toString().toLowerCase()));
-    };
-    VTools.isFalse = function (value) {
-        if (value === undefined || value === null) {
-            return false;
-        }
-        var arr = ['no', 'n', 'false', 'f', '0', 'off'];
-        return (_.includes(arr, value.toString().toLowerCase()));
-    };
-    VTools.isTrueOrFalse = function (value) {
-        return VTools.isTrue(value) || VTools.isFalse(value);
-    };
-    VTools.eachSlice = function (value, size, callback) {
-        if (size === void 0) { size = 1; }
-        for (var i = 0, l = value.length; i < l; i += size) {
-            callback(value.slice(i, i + size));
-        }
-    };
-    VTools.arraySum = function (value) {
-        if (value && VTools.isArray(value)) {
-            return _.reduce(value, function (memo, num) {
-                var numType = typeof num;
-                return ((num &&
-                    (numType === 'string' || numType === 'number') &&
-                    (isFinite(num) || num === Infinity)) ?
-                    memo + parseFloat(num) :
-                    memo);
-            }, 0);
-        }
-        else {
-            return 0;
-        }
-    };
-    VTools.arrayItemCounts = function (array) {
-        return _.reduce(array || [], function (memo, e) {
-            memo[e] = memo[e] || 0;
-            memo[e] += 1;
-            return memo;
-        }, {});
-    };
-    VTools.arraySort = function (array) {
-        if (array === void 0) { array = []; }
-        var obj = _.map(array, function (i) { return i === 'Infinity' ? Infinity : (i === '-Infinity' ? -Infinity : i); });
-        return obj.sort(function (a, b) { return (a - b); });
-    };
-    VTools.arrayClosest = function (num, arr) {
-        if (arr === void 0) { arr = []; }
-        if (!VTools.isNumeric(num) || !VTools.isArray(arr) || arr.length === 0)
-            return null;
-        num = parseFloat(num.toString());
-        var curr = parseFloat(arr[0].toString());
-        var diff = Math.abs(num - curr);
-        arr.forEach(function (val) {
-            if (!VTools.isBlank(val)) {
-                var cleanVal = parseFloat(val.toString());
-                var newdiff = Math.abs(num - cleanVal);
-                if (VTools.isNumeric(val) && newdiff < diff) {
-                    diff = newdiff;
-                    curr = cleanVal;
-                }
-            }
-        });
-        return curr;
-    };
-    VTools.arrayClosestBelowOrAbove = function (num, arr, orEqual, orAbove) {
-        if (arr === void 0) { arr = []; }
-        if (!VTools.isNumeric(num) || !VTools.isArray(arr) || arr.length === 0) {
-            return null;
-        }
-        num = parseFloat(num.toString());
-        var obj = _.chain(arr).uniq().compact()
-            .map(function (i) {
-            return parseFloat(i.toString());
-        }).value();
-        obj = VTools.arraySort(obj);
-        if (!orAbove) {
-            obj = _.reverse(obj);
-        }
-        var closest = null;
-        var fn;
-        if (orEqual) {
-            if (orAbove) {
-                fn = function (val, num) { return val >= num; };
-            }
-            else {
-                fn = function (val, num) { return val <= num; };
-            }
-        }
-        else {
-            if (orAbove) {
-                fn = function (val, num) { return val > num; };
-            }
-            else {
-                fn = function (val, num) { return val < num; };
-            }
-        }
-        _.find(obj, function (val) {
-            var r = VTools.isNumeric(val) && fn(val, num);
-            // let r = val <= num;
-            if (r)
-                closest = val;
-            return r;
-        });
-        return closest;
-    };
-    VTools.arrayClosestBelow = function (num, arr) {
-        if (arr === void 0) { arr = []; }
-        return VTools.arrayClosestBelowOrAbove(num, arr, false, false);
-    };
-    VTools.arrayClosestAbove = function (num, arr) {
-        if (arr === void 0) { arr = []; }
-        return VTools.arrayClosestBelowOrAbove(num, arr, false, true);
-    };
-    VTools.arrayEqualOrClosestBelow = function (num, arr) {
-        if (arr === void 0) { arr = []; }
-        return VTools.arrayClosestBelowOrAbove(num, arr, true, false);
-    };
-    VTools.arrayEqualOrClosestAbove = function (num, arr) {
-        if (arr === void 0) { arr = []; }
-        return VTools.arrayClosestBelowOrAbove(num, arr, true, true);
-    };
-    VTools.hasRangeOverlap = function (range1, range2, options) {
-        if (options === void 0) { options = {}; }
-        if (VTools.isTrue(options['sort'])) {
-            range1 = range1.sort();
-            range2 = range2.sort();
-        }
-        return range1 && range2 && range1.length === 2 && range2.length === 2 &&
-            (VTools.isTrue(options['strict']) ?
-                ((range1[0] !== range1[1]) && (((range1[0] < range2[1]) && (range1[1] > range2[0])) ||
-                    ((range2[0] < range1[1]) && (range2[1] > range1[0])))) :
-                ((range1[0] <= range2[1]) && (range2[0] <= range1[1])));
-    };
-    VTools.makeString = function (value) {
-        if (value == null)
-            return '';
-        return '' + value;
-    };
-    VTools.coerceToString = function (value) {
-        return _.some(['[object Undefined]', '[object Null]'], function (t) {
-            return Object.prototype.toString.call(value) === t;
-        }) ? '' : value.toString();
-    };
     VTools.pluralize = function (value) {
         return pluralize.apply(this, arguments);
-    };
-    VTools.reverse = function (value) {
-        return value.split('').reverse().join('');
     };
     VTools.ambipluralize = function (value) {
         if (s.isBlank(value))
@@ -410,11 +228,8 @@ var VTools = /** @class */ (function () {
     VTools.stringToInteger = function (s) {
         return parseInt(VTools.stringToDecimal(s).toString(), 10);
     };
-    VTools.parseBigOrZero = function (value) {
-        return math.bignumber(VTools.isNumeric(value) ? value : 0.0);
-    };
     VTools.variableCurrency = function (number, currency) {
-        number = VTools.makeString(number);
+        number = v_utilities_1.VUtilities.makeString(number);
         if (VTools.roundToDecimal(parseFloat(number), 2) === parseFloat(number)) {
             return accounting.formatMoney(number, currency);
         }
@@ -427,7 +242,7 @@ var VTools = /** @class */ (function () {
         }
     };
     VTools.variableInteger = function (number) {
-        number = VTools.makeString(number);
+        number = v_utilities_1.VUtilities.makeString(number);
         if (!VTools.isNumeric(number))
             return number;
         if (VTools.roundToDecimal(parseFloat(number), 0) === parseFloat(number)) {
@@ -442,7 +257,7 @@ var VTools = /** @class */ (function () {
         }
     };
     VTools.noExponentsStr = function (number) {
-        number = VTools.makeString(number);
+        number = v_utilities_1.VUtilities.makeString(number);
         var f = parseFloat(number);
         var data = String(f).split(/[eE]/);
         if (data.length === 1) {
@@ -462,7 +277,7 @@ var VTools = /** @class */ (function () {
     };
     VTools.decimalToStr = function (number, roundTo) {
         if (roundTo === void 0) { roundTo = VTools.ROUND_TO_DEFAULT; }
-        number = VTools.makeString(number);
+        number = v_utilities_1.VUtilities.makeString(number);
         var f = parseFloat(number);
         var str = VTools.noExponentsStr(f);
         roundTo = VTools.isNumeric(roundTo) ? parseInt(roundTo.toString(), 10) : VTools.ROUND_TO_DEFAULT;
@@ -483,15 +298,15 @@ var VTools = /** @class */ (function () {
         return str;
     };
     VTools.decimalToPercStr = function (number) {
-        return (VTools.decimalToStr(parseFloat(math.multiply(VTools.parseBigOrZero(number), math.bignumber(100.0)).toString())) || '0.0') + '%';
+        return (VTools.decimalToStr(parseFloat(math.multiply(v_utilities_1.VUtilities.parseBigOrZero(number), math.bignumber(100.0)).toString())) || '0.0') + '%';
     };
     VTools.percToDecimal = function (number) {
-        return parseFloat(math.divide(VTools.parseBigOrZero(number), math.bignumber(100.0)).toString());
+        return parseFloat(math.divide(v_utilities_1.VUtilities.parseBigOrZero(number), math.bignumber(100.0)).toString());
     };
     VTools.percentThreshold = function (number, verbose) {
         if (!VTools.isNumeric(number))
             return number;
-        number = VTools.makeString(number);
+        number = v_utilities_1.VUtilities.makeString(number);
         var result;
         if (parseFloat(number) === 50) {
             result = 'a majority';
@@ -514,13 +329,13 @@ var VTools = /** @class */ (function () {
     };
     VTools.decimalToPercentage = function (number, dec) {
         if (dec === void 0) { dec = 2; }
-        return ((parseFloat(VTools.makeString(number)) || 0.0) * 100).toFixed(dec);
+        return ((parseFloat(v_utilities_1.VUtilities.makeString(number)) || 0.0) * 100).toFixed(dec);
     };
     VTools.roundToDecimal = function (value, dec) {
         if (dec === void 0) { dec = 2; }
-        dec = VTools.isNumeric(dec) ? parseInt(VTools.makeString(dec), 10) : 2;
+        dec = VTools.isNumeric(dec) ? parseInt(v_utilities_1.VUtilities.makeString(dec), 10) : 2;
         if (VTools.isNumeric(value)) {
-            var bigValue = VTools.parseBigOrZero(value);
+            var bigValue = v_utilities_1.VUtilities.parseBigOrZero(value);
             var num = math.divide(
             //   math.round(math.multiply(bigValue, math.bignumber(math.pow(10, dec)))),
             math.round(math.multiply(bigValue, math.pow(10, dec))), math.pow(10, dec));
@@ -533,37 +348,15 @@ var VTools = /** @class */ (function () {
             return num;
         }
         else {
-            return parseFloat(VTools.makeString(value));
+            return parseFloat(v_utilities_1.VUtilities.makeString(value));
         }
     };
     VTools.numberToWords = function (value) {
         return vn2w.numberToWords(value);
     };
-    VTools.enumDate = function (obj) {
-        if (s.isBlank(obj))
-            return null;
-        if (typeof (obj) === 'number') {
-            // let exp = ParseInt(obj.toExponential().split(/e[\+\-]/)[1], 10);
-            // if (exp < 12) {
-            // } else {
-            return obj;
-            // }
-        }
-        if (typeof (obj) === 'string' || typeof (obj) === 'object') {
-            // let dateObj = Date.parse(obj);
-            // let offset = new Date().getTimezoneOffset()*60000;
-            // return new Date(dateObj).getTime() + offset
-            return parseInt(moment.utc(obj).format('x'), 10);
-        }
-        // return Date.parse(obj)
-        return parseInt(moment.utc(obj).format('x'), 10);
-    };
-    VTools.newUTCDateTimeStamp = function () {
-        return VTools.enumDate(new Date());
-    };
     VTools.coerceToDate = function (date, options) {
         try {
-            return moment.utc(VTools.enumDate(date) || 0);
+            return moment.utc(v_utilities_1.VUtilities.enumDate(date) || 0);
         }
         catch (err) {
             return date;
@@ -636,7 +429,7 @@ var VTools = /** @class */ (function () {
         return VTools.toRoman(value).toLowerCase();
     };
     VTools.toAlpha = function (value, result) {
-        value = parseInt(VTools.makeString(value) || '0', 10);
+        value = parseInt(v_utilities_1.VUtilities.makeString(value) || '0', 10);
         result = result || '';
         var divisor = 26;
         while (value > 0) {
@@ -681,7 +474,7 @@ var VTools = /** @class */ (function () {
     // confusing naming: returns an array
     VTools.hashToLines = function (hash) {
         return _.map(VTools.smart_hash_values(hash), function (v, k) {
-            return VTools.makeString(k) + ': ' + VTools.makeString(v);
+            return v_utilities_1.VUtilities.makeString(k) + ': ' + v_utilities_1.VUtilities.makeString(v);
         });
     };
     // confusing naming: returns a string
@@ -802,6 +595,17 @@ var VTools = /** @class */ (function () {
     VTools.jsInputDisplay = function (item, vFieldsHelp) {
         return VTools.jsFormatVFields(item, vFieldsHelp, ['jsInputProcessors', 'js_formatters']);
     };
+    VTools.isBlank = v_utilities_1.VUtilities.isBlank;
+    VTools.isObject = v_utilities_1.VUtilities.isObject;
+    VTools.isArray = v_utilities_1.VUtilities.isArray;
+    VTools.isDate = v_utilities_1.VUtilities.isDate;
+    VTools.isString = v_utilities_1.VUtilities.isString;
+    VTools.isNumeric = v_utilities_1.VUtilities.isNumeric;
+    VTools.isTrue = v_utilities_1.VUtilities.isTrue;
+    VTools.isFalse = v_utilities_1.VUtilities.isFalse;
+    VTools.isTrueOrFalse = v_utilities_1.VUtilities.isTrueOrFalse;
+    VTools.coerceToString = v_utilities_1.VUtilities.coerceToString;
+    VTools.reverse = v_utilities_1.VUtilities.reverse;
     VTools.string_to_decimal = VTools.stringToDecimal;
     VTools.string_to_integer = VTools.stringToInteger;
     VTools.join_array = VTools.joinArray;

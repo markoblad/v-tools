@@ -1,4 +1,4 @@
-/// <reference types="mathjs" />
+import { VUtilities } from 'v-utilities';
 export declare class VTools {
     static readonly ROUND_TO_DEFAULT: number;
     static readonly ALPHABET: string[];
@@ -11,33 +11,18 @@ export declare class VTools {
     static readonly PERIODLY: string[];
     static readonly PERIODS: string[];
     static readonly SINGULAR_PERIODS: string[];
-    static isBlank(value?: any): boolean;
-    static isObject(obj?: any): boolean;
-    static isArray(obj: any): boolean;
-    static isDate(obj: any): boolean;
-    static isString(value?: any): boolean;
-    static isNumeric(value?: any): boolean;
-    static isTrue(value?: any): boolean;
-    static isFalse(value?: any): boolean;
-    static isTrueOrFalse(value?: any): boolean;
-    static eachSlice(value: any[], size: number | undefined, callback: Function): void;
-    static arraySum(value?: any): number;
-    static arrayItemCounts(array: any[] | null): any;
-    static arraySort(array?: any[] | null): any;
-    static arrayClosest(num: number, arr?: number[]): number | null;
-    static arrayClosestBelowOrAbove(num: number, arr: number[] | undefined, orEqual: boolean | null, orAbove: boolean | null): number | null;
-    static arrayClosestBelow(num: number, arr?: number[]): number | null;
-    static arrayClosestAbove(num: number, arr?: number[]): number | null;
-    static arrayEqualOrClosestBelow(num: number, arr?: number[]): number | null;
-    static arrayEqualOrClosestAbove(num: number, arr?: number[]): number | null;
-    static hasRangeOverlap(range1: [number, number], range2: [number, number], options?: {
-        strict?: boolean;
-        sort?: boolean;
-    }): boolean;
-    static makeString(value?: any): string;
-    static coerceToString(value: any): string;
+    static isBlank: typeof VUtilities.isBlank;
+    static isObject: typeof VUtilities.isObject;
+    static isArray: typeof VUtilities.isArray;
+    static isDate: typeof VUtilities.isDate;
+    static isString: typeof VUtilities.isString;
+    static isNumeric: typeof VUtilities.isNumeric;
+    static isTrue: typeof VUtilities.isTrue;
+    static isFalse: typeof VUtilities.isFalse;
+    static isTrueOrFalse: typeof VUtilities.isTrueOrFalse;
+    static coerceToString: typeof VUtilities.coerceToString;
+    static reverse: typeof VUtilities.reverse;
     static pluralize(value: string): string;
-    static reverse(value: string): string;
     static ambipluralize(value: string): any;
     static normalizeString(value?: string): any;
     static parseZeroPaddedInt(value?: any): number;
@@ -45,7 +30,6 @@ export declare class VTools {
     static string_to_decimal: typeof VTools.stringToDecimal;
     static stringToInteger(s: any): number;
     static string_to_integer: typeof VTools.stringToInteger;
-    static parseBigOrZero(value: number | string): mathjs.BigNumber;
     static variableCurrency(number: number | string, currency?: string): string | null;
     static variableInteger(number: number | string): string | null;
     static noExponentsStr(number: number | string): string;
@@ -57,8 +41,6 @@ export declare class VTools {
     static decimalToPercentage(number: number | string, dec?: number): string;
     static roundToDecimal(value: number | string, dec?: number): number;
     static numberToWords(value: number | string): string;
-    static enumDate(obj?: any): number | null;
-    static newUTCDateTimeStamp(): number;
     static coerceToDate(date: any, options?: {}): any;
     static formatDate(value?: any, options?: any): any;
     static formatDateSentence(date?: any, options?: {}): any;
