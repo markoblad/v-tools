@@ -384,6 +384,22 @@ var VTools = /** @class */ (function () {
             return value;
         }
     };
+    VTools.formatUTCDatetimeStamp = function (stamp, verbose) {
+        var formatStr = 'MMM D, YYYY, HH:mm:ss ZZ';
+        if (verbose) {
+            formatStr = 'M' + formatStr;
+        }
+        if (v_utilities_1.VUtilities.isNumeric(stamp)) {
+            return moment.utc(stamp).format(formatStr);
+        }
+        else {
+            return formatStr;
+        }
+    };
+    VTools.formatUTCDatetime = function (value, verbose) {
+        var stamp = v_utilities_1.VUtilities.enumDate(value);
+        return VTools.formatUTCDatetimeStamp(stamp, verbose);
+    };
     VTools.formatDateSentence = function (date, options) {
         if (s.isBlank(date))
             return date;

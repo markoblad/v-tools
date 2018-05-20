@@ -1,5 +1,6 @@
 'use strict';
 var expect = require('chai').expect;
+var moment = require('moment');
 var index = require('../dist/index.js');
 var VTools = index.VTools;
 
@@ -964,6 +965,58 @@ describe('VTools functions test', () => {
     ];
     expect(result.join('')).to.equal(expectation.join(''));
   });
+  it('should return formatUTCDatetime', () => {
+    var now = Date.now();
+    var date = new Date();
+    var result = [
+      VTools.formatUTCDatetime(null),
+      VTools.formatUTCDatetime('0', true),
+      VTools.formatUTCDatetime('010', true),
+      VTools.formatUTCDatetime(100, true),
+      VTools.formatUTCDatetime(1e2, true),
+      VTools.formatUTCDatetime('00100.001', true),
+      VTools.formatUTCDatetime(1439344269, true),
+      VTools.formatUTCDatetime('20150811', true),
+      VTools.formatUTCDatetime('2015-08-11', true),
+      VTools.formatUTCDatetime('August 11, 2015', true),
+      VTools.formatUTCDatetime(1439251200000, true),
+      VTools.formatUTCDatetime('August 11, 2015 21:51:09', true),
+      VTools.formatUTCDatetime(1439329869000, true),
+      VTools.formatUTCDatetime('Tue Aug 11 2015 21:51:09 GMT+0000', true),
+      VTools.formatUTCDatetime('August 11, 2015 21:51:09 UTC', true),
+      VTools.formatUTCDatetime(VTools.coerceToDate(now)),
+      VTools.formatUTCDatetime(date),
+    ];
+    var expectation = [
+      'MMM D, YYYY, HH:mm:ss ZZ',
+      'January 1, 2000, 00:00:00 +0000',
+      'October 1, 2001, 00:00:00 +0000',
+      'January 1, 1970, 00:00:00 +0000',
+      'January 1, 1970, 00:00:00 +0000',
+      'January 1, 0100, 00:00:00 +0000',
+      'January 17, 1970, 15:49:04 +0000', // 'August 12, 2015, 00:00:00 +0000', // August 12, 2015
+      'August 11, 2015, 00:00:00 +0000', // August 12, 2015
+      'August 11, 2015, 00:00:00 +0000', // August 12, 2015
+      'August 11, 2015, 00:00:00 +0000',
+      'August 11, 2015, 00:00:00 +0000', // 'January 21, 47578, 00:00:00 +0000', // 'January 20, 47578'
+      'August 11, 2015, 21:51:09 +0000',
+      'August 11, 2015, 21:51:09 +0000', // 'July 19, 47580, 00:00:00 +0000',
+      'August 11, 2015, 21:51:09 +0000',
+      'August 11, 2015, 21:51:09 +0000',
+      VTools.coerceToDate(now).format('MMM D, YYYY, HH:mm:ss ZZ'),
+      VTools.coerceToDate(moment(date.toString()).utc()).format('MMM D, YYYY, HH:mm:ss ZZ'),
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+  it('should return formatUTCDatetimeStamp', () => {
+    var result = VTools.formatUTCDatetimeStamp(1439251200000);
+    expect(result).to.equal('Aug 11, 2015, 00:00:00 +0000');
+  });
+  it('should return formatUTCDatetimeStamp', () => {
+    var result = VTools.formatUTCDatetimeStamp('August 11, 2015');
+    expect(result).to.equal('MMM D, YYYY, HH:mm:ss ZZ');
+  });
+
   it('should return formatDateSentence', () => {
     var result = VTools.formatDateSentence('August 11, 2015');
     expect(result).to.equal('11th day of August, 2015');

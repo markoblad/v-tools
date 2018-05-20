@@ -363,6 +363,21 @@ export class VTools {
     }
   }
 
+  public static formatUTCDatetimeStamp(stamp?: any, verbose?: boolean): string {
+    let formatStr = 'MMM D, YYYY, HH:mm:ss ZZ';
+    if (verbose) { formatStr = 'M' + formatStr; }
+    if (VUtilities.isNumeric(stamp)) {
+      return moment.utc(stamp as number).format(formatStr);
+    } else {
+      return formatStr;
+    }
+  }
+
+  public static formatUTCDatetime(value?: any, verbose?: boolean): string {
+    const stamp = VUtilities.enumDate(value);
+    return VTools.formatUTCDatetimeStamp(stamp, verbose);
+  }
+
   public static formatDateSentence(date?: any, options?: {}) {
     if (s.isBlank(date)) return date;
     date = VTools.coerceToDate(date, options);

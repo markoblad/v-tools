@@ -43,6 +43,8 @@ export declare class VTools {
     static numberToWords(value: number | string): string;
     static coerceToDate(date: any, options?: {}): any;
     static formatDate(value?: any, options?: any): any;
+    static formatUTCDatetimeStamp(stamp?: any, verbose?: boolean): string;
+    static formatUTCDatetime(value?: any, verbose?: boolean): string;
     static formatDateSentence(date?: any, options?: {}): any;
     static labelize(str: any): string;
     static hintize(str: any): string;
