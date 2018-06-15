@@ -189,6 +189,15 @@ var VTools = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    VTools.bool = function (value) {
+        return VTools.isTrue(value) ? 'Yes' : 'No';
+    };
+    VTools.yesCheckbox = function (value) {
+        return VTools.isTrue(value) ? 'Yes' : null;
+    };
+    VTools.check = function (value) {
+        return VTools.isTrue(value) ? '\u2713' : '\u2718';
+    };
     VTools.pluralize = function (value) {
         return pluralize.apply(this, arguments);
     };

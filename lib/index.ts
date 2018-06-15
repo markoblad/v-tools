@@ -170,6 +170,18 @@ export class VTools {
 
   public static reverse = VUtilities.reverse;
 
+  public static bool(value: string | null | undefined): string {
+    return VTools.isTrue(value) ? 'Yes' : 'No';
+  }
+
+  public static yesCheckbox(value: string | null | undefined): string | null {
+    return VTools.isTrue(value) ? 'Yes' : null;
+  }
+
+  public static check(value: string | null | undefined): string {
+    return VTools.isTrue(value) ? '\u2713' : '\u2718';
+  }
+
   public static pluralize(value: string): string {
     return pluralize.apply(this, arguments);
   }

@@ -429,7 +429,94 @@ describe('VTools functions test', () => {
       'false',
     ];
     expect(result.join('')).to.equal(expectation.join(''));
-  });  
+  });
+  it('should return bool', () => {
+    var result = [
+      VTools.bool(undefined),
+      VTools.bool(null),
+      VTools.bool(0),
+      VTools.bool('0'),
+      VTools.bool(1),
+      VTools.bool('1'),
+      VTools.bool(-1),
+      VTools.bool('true'),
+      VTools.bool(true),
+      VTools.bool('false'),
+      VTools.bool(false),
+    ];
+    var expectation = [
+      'No',
+      'No',
+      'No',
+      'No',
+      'Yes',
+      'Yes',
+      'No',
+      'Yes',
+      'Yes',
+      'No',
+      'No',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+ it('should return yesCheckbox', () => {
+    var result = [
+      VTools.yesCheckbox(undefined),
+      VTools.yesCheckbox(null),
+      VTools.yesCheckbox(0),
+      VTools.yesCheckbox('0'),
+      VTools.yesCheckbox(1),
+      VTools.yesCheckbox('1'),
+      VTools.yesCheckbox(-1),
+      VTools.yesCheckbox('true'),
+      VTools.yesCheckbox(true),
+      VTools.yesCheckbox('false'),
+      VTools.yesCheckbox(false),
+    ];
+    var expectation = [
+      null,
+      null,
+      null,
+      null,
+      'Yes',
+      'Yes',
+      null,
+      'Yes',
+      'Yes',
+      null,
+      null,
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
+ it('should return check', () => {
+    var result = [
+      VTools.check(undefined),
+      VTools.check(null),
+      VTools.check(0),
+      VTools.check('0'),
+      VTools.check(1),
+      VTools.check('1'),
+      VTools.check(-1),
+      VTools.check('true'),
+      VTools.check(true),
+      VTools.check('false'),
+      VTools.check(false),
+    ];
+    var expectation = [
+      '\u2718',
+      '\u2718',
+      '\u2718',
+      '\u2718',
+      '\u2713',
+      '\u2713',
+      '\u2718',
+      '\u2713',
+      '\u2713',
+      '\u2718',
+      '\u2718',
+    ];
+    expect(result.join('')).to.equal(expectation.join(''));
+  });
   it('should return pluralize', () => {
     var result = [
       VTools.pluralize('mark'),
@@ -903,11 +990,11 @@ describe('VTools functions test', () => {
     ];
     var expectation = [
       'Thu Jan 01 1970 00:00:00 GMT+0000',
-      'Sat Jan 01 2000 00:00:00 GMT+0000',
-      'Mon Oct 01 2001 00:00:00 GMT+0000', // check
+      'Thu Jan 01 1970 00:00:00 GMT+0000', // 'Sat Jan 01 2000 00:00:00 GMT+0000',
+      'Thu Jan 01 1970 00:00:00 GMT+0000', // 'Mon Oct 01 2001 00:00:00 GMT+0000', // check
       'Thu Jan 01 1970 00:00:00 GMT+0000',
       'Thu Jan 01 1970 00:00:00 GMT+0000',
-      'Fri Jan 01 0100 00:00:00 GMT+0000', // check
+      'Thu Jan 01 1970 00:00:00 GMT+0000', // 'Fri Jan 01 0100 00:00:00 GMT+0000', // check
       'Sat Jan 17 1970 15:49:04 GMT+0000', // check
 
       'Tue Aug 11 2015 00:00:00 GMT+0000',
@@ -989,13 +1076,13 @@ describe('VTools functions test', () => {
     ];
     var expectation = [
       'MMM D, YYYY, HH:mm:ss ZZ',
-      'January 1, 2000, 00:00:00 +0000',
-      'October 1, 2001, 00:00:00 +0000',
       'January 1, 1970, 00:00:00 +0000',
       'January 1, 1970, 00:00:00 +0000',
-      'January 1, 0100, 00:00:00 +0000',
+      'January 1, 1970, 00:00:00 +0000',
+      'January 1, 1970, 00:00:00 +0000',
+      'January 1, 1970, 00:00:00 +0000',
       'January 17, 1970, 15:49:04 +0000', // 'August 12, 2015, 00:00:00 +0000', // August 12, 2015
-      'August 11, 2015, 00:00:00 +0000', // August 12, 2015
+      'January 1, 1970, 05:35:50 +0000', // 'August 11, 2015, 00:00:00 +0000', // August 12, 2015
       'August 11, 2015, 00:00:00 +0000', // August 12, 2015
       'August 11, 2015, 00:00:00 +0000',
       'August 11, 2015, 00:00:00 +0000', // 'January 21, 47578, 00:00:00 +0000', // 'January 20, 47578'

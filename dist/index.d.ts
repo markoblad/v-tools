@@ -22,6 +22,9 @@ export declare class VTools {
     static isTrueOrFalse: typeof VUtilities.isTrueOrFalse;
     static coerceToString: typeof VUtilities.coerceToString;
     static reverse: typeof VUtilities.reverse;
+    static bool(value: string | null | undefined): string;
+    static yesCheckbox(value: string | null | undefined): string | null;
+    static check(value: string | null | undefined): string;
     static pluralize(value: string): string;
     static ambipluralize(value: string): any;
     static normalizeString(value?: string): any;
