@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import * as s from 'underscore.string';
 import * as pluralize from 'pluralize';
 import * as moment from 'moment';
-import * as math from 'mathjs';
+import * as mathjs from 'mathjs';
 import * as accounting from 'accounting';
 import * as vn2w from 'v-number-to-words';
 import { VUtilities } from 'v-utilities';
@@ -183,7 +183,7 @@ export class VTools {
   }
 
   public static pluralize(value: string): string {
-    return pluralize.apply(this, arguments);
+    return pluralize.apply(this, arguments as any);
   }
 
   public static ambipluralize(value: string): any {
@@ -292,15 +292,15 @@ export class VTools {
 
   public static decimalToPercStr(number: number | string) {
     return (VTools.decimalToStr(parseFloat(
-      math.multiply(VUtilities.parseBigOrZero(number),
-      math.bignumber(100.0)
+      mathjs.multiply(mathjs.number(VUtilities.parseBigOrZero(number)),
+      mathjs.bignumber(100.0)
     ).toString())) || '0.0') + '%';
   }
 
   public static percToDecimal(number: number | string) {
-    return parseFloat(math.divide(
-      VUtilities.parseBigOrZero(number),
-      math.bignumber(100.0)).toString()
+    return parseFloat(mathjs.divide(
+      mathjs.number(VUtilities.parseBigOrZero(number)),
+      mathjs.bignumber(100.0)).toString()
     );
   }
 
@@ -331,13 +331,13 @@ export class VTools {
     dec = VTools.isNumeric(dec) ? parseInt(VUtilities.makeString(dec), 10) : 2;
     if (VTools.isNumeric(value)) {
       let bigValue = VUtilities.parseBigOrZero(value);
-      let num: any = math.divide(
-      //   math.round(math.multiply(bigValue, math.bignumber(math.pow(10, dec)))),
-        math.round(math.multiply(bigValue, math.pow(10, dec))),
-        math.pow(10, dec)
+      let num: any = mathjs.divide(
+        // mathjs.round(mathjs.multiply(bigValue, mathjs.bignumber(mathjs.pow(10, dec)))),
+        mathjs.round(mathjs.multiply(mathjs.number(bigValue), mathjs.pow(10, dec)) as mathjs.BigNumber),
+        mathjs.pow(10, dec)
       );
       // if (dec >= 0) num = num.toFixed(dec);
-      if (dec >= 0) { num = math.format(num, {notation: 'fixed', precision: dec}); };
+      if (dec >= 0) { num = mathjs.format(num, {notation: 'fixed', precision: dec}); };
       num = parseFloat(num.toString());
       return num;
     } else {
@@ -351,7 +351,7 @@ export class VTools {
 
   public static coerceToDate(date: any, options?: {}) {
     try {
-      return moment.utc(VUtilities.enumDate(date) || 0);
+      return moment(VUtilities.enumDate(date) || 0).utc();
     } catch (err) {
       return date;
     }

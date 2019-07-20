@@ -978,6 +978,7 @@ describe('VTools functions test', () => {
       VTools.coerceToDate(1e2),
       VTools.coerceToDate('00100.001', 3),
       VTools.coerceToDate(1439344269),
+
       VTools.coerceToDate('August 11, 2015'),
       VTools.coerceToDate(1439251200000),
       VTools.coerceToDate('August 11, 2015 21:51:09'),
@@ -1005,7 +1006,7 @@ describe('VTools functions test', () => {
       'Tue Aug 11 2015 21:51:09 GMT+0000',
       new Date(now).toString(),
       date.toString(),
-      'Thu Jan 01 1970 00:00:00 GMT+0000',
+      'Tue Aug 11 2015 21:51:09 GMT+0000', //'Thu Jan 01 1970 00:00:00 GMT+0000',
     ];
     expect(result.join('')).to.equal(expectation.join(''));
   });

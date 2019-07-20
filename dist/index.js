@@ -4,7 +4,7 @@ var _ = require("lodash");
 var s = require("underscore.string");
 var pluralize = require("pluralize");
 var moment = require("moment");
-var math = require("mathjs");
+var mathjs = require("mathjs");
 var accounting = require("accounting");
 var vn2w = require("v-number-to-words");
 var v_utilities_1 = require("v-utilities");
@@ -307,10 +307,10 @@ var VTools = /** @class */ (function () {
         return str;
     };
     VTools.decimalToPercStr = function (number) {
-        return (VTools.decimalToStr(parseFloat(math.multiply(v_utilities_1.VUtilities.parseBigOrZero(number), math.bignumber(100.0)).toString())) || '0.0') + '%';
+        return (VTools.decimalToStr(parseFloat(mathjs.multiply(mathjs.number(v_utilities_1.VUtilities.parseBigOrZero(number)), mathjs.bignumber(100.0)).toString())) || '0.0') + '%';
     };
     VTools.percToDecimal = function (number) {
-        return parseFloat(math.divide(v_utilities_1.VUtilities.parseBigOrZero(number), math.bignumber(100.0)).toString());
+        return parseFloat(mathjs.divide(mathjs.number(v_utilities_1.VUtilities.parseBigOrZero(number)), mathjs.bignumber(100.0)).toString());
     };
     VTools.percentThreshold = function (number, verbose) {
         if (!VTools.isNumeric(number))
@@ -345,12 +345,12 @@ var VTools = /** @class */ (function () {
         dec = VTools.isNumeric(dec) ? parseInt(v_utilities_1.VUtilities.makeString(dec), 10) : 2;
         if (VTools.isNumeric(value)) {
             var bigValue = v_utilities_1.VUtilities.parseBigOrZero(value);
-            var num = math.divide(
-            //   math.round(math.multiply(bigValue, math.bignumber(math.pow(10, dec)))),
-            math.round(math.multiply(bigValue, math.pow(10, dec))), math.pow(10, dec));
+            var num = mathjs.divide(
+            // mathjs.round(mathjs.multiply(bigValue, mathjs.bignumber(mathjs.pow(10, dec)))),
+            mathjs.round(mathjs.multiply(mathjs.number(bigValue), mathjs.pow(10, dec))), mathjs.pow(10, dec));
             // if (dec >= 0) num = num.toFixed(dec);
             if (dec >= 0) {
-                num = math.format(num, { notation: 'fixed', precision: dec });
+                num = mathjs.format(num, { notation: 'fixed', precision: dec });
             }
             ;
             num = parseFloat(num.toString());
@@ -365,7 +365,7 @@ var VTools = /** @class */ (function () {
     };
     VTools.coerceToDate = function (date, options) {
         try {
-            return moment.utc(v_utilities_1.VUtilities.enumDate(date) || 0);
+            return moment(v_utilities_1.VUtilities.enumDate(date) || 0).utc();
         }
         catch (err) {
             return date;

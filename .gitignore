@@ -57,3 +57,5 @@ typings/
 # dotenv environment variables file
 .env
 
+# for copying to sublime text search
+# -*/dist/*,-*/node_modules/*,-*/out/*
